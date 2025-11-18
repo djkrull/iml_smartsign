@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Background Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: red; /* Will show red if image doesn't load */
+            background-image: url('iml_background.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .test-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            font-family: Arial;
+        }
+
+        h1 {
+            color: #084077;
+            margin: 0 0 20px 0;
+        }
+
+        .status {
+            font-size: 20px;
+            margin: 10px 0;
+        }
+
+        .working { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="test-box">
+        <h1>Background Image Test</h1>
+        <div class="status">If you see <span class="working">YELLOW BACKGROUND</span> = Working!</div>
+        <div class="status">If you see <span class="error">RED BACKGROUND</span> = Image not loading!</div>
+        <hr>
+        <p>Image location: <code>iml_background.png</code></p>
+        <p>Current folder: <code>C:\Users\chrwah28.KVA\Development\smartsign\</code></p>
+    </div>
+
+    <script>
+        // Check if background image loaded
+        window.addEventListener('load', function() {
+            const img = new Image();
+            img.onload = function() {
+                console.log('✅ Background image loaded successfully!');
+                alert('✅ Background image loaded successfully!');
+            };
+            img.onerror = function() {
+                console.error('❌ Failed to load background image');
+                alert('❌ Background image NOT found!\n\nMake sure iml_background.png is in:\nC:\\Users\\chrwah28.KVA\\Development\\smartsign\\');
+            };
+            img.src = 'iml_background.png';
+        });
+    </script>
+</body>
+</html>

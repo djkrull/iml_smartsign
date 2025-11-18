@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, initial-scale=1">
+    <title>SmartSign Seminar Display - Preview</title>
+    <style>
+        /* Font Face - DINPro Regular */
+        @font-face {
+            font-family: 'DINPro';
+            src: url('DINPro-Regular.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 1920px;
+            height: 1080px;
+            font-family: 'DINPro', 'Arial', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Background */
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('iml_background.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 0;
+        }
+
+        /* Semi-transparent overlay for better text readability */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,193,7,0.15) 0%, rgba(255,235,59,0.15) 100%);
+            z-index: 1;
+        }
+
+        /* Logo Container */
+        .logo-container {
+            position: absolute;
+            top: 123px;
+            transform: translateY(-50%);
+            right: 60px;
+            z-index: 10;
+        }
+
+        .logo {
+            height: 120px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* Main Content Container */
+        .content {
+            position: relative;
+            z-index: 5;
+            width: 100%;
+            height: 100%;
+            padding: 60px 80px;
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 72px;
+            font-weight: bold;
+            color: #084077;
+            letter-spacing: -1px;
+            margin: 0;
+            padding: 20px 0;
+            font-family: Georgia, serif;
+            line-height: 1.2;
+        }
+
+        /* Seminar Container */
+        .seminars-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* Individual Seminar Card */
+        .seminar {
+            background: rgba(255, 255, 255, 0.97);
+            border-left: 8px solid #FFC107;
+            border-radius: 10px;
+            padding: 35px 45px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .seminar:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+        }
+
+        /* Date and Time Row */
+        .date-time {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 18px;
+            font-size: 32px;
+            color: #444;
+            font-weight: 600;
+        }
+
+        .date {
+            color: #1976D2;
+        }
+
+        .time {
+            color: #E91E63;
+        }
+
+        .separator {
+            color: #999;
+        }
+
+        /* Title */
+        .title {
+            font-size: 42px;
+            font-weight: bold;
+            color: #084077;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+
+        /* Speaker */
+        .speaker-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            font-size: 32px;
+            color: #333;
+        }
+
+        .speaker-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .speaker-name {
+            color: #084077;
+        }
+
+        /* Location */
+        .location-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 30px;
+            color: #666;
+        }
+
+        .location-label {
+            font-weight: 600;
+        }
+
+        .location-name {
+            color: #444;
+        }
+
+        /* Icons (using Unicode symbols) */
+        .icon {
+            font-size: 28px;
+        }
+
+        /* Animation for data updates */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .seminar {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Stagger animation for multiple seminars */
+        .seminar:nth-child(1) { animation-delay: 0s; }
+        .seminar:nth-child(2) { animation-delay: 0.1s; }
+        .seminar:nth-child(3) { animation-delay: 0.2s; }
+        .seminar:nth-child(4) { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+    <!-- Background Image -->
+    <div class="background"></div>
+    <div class="overlay"></div>
+
+    <!-- Logo -->
+    <div class="logo-container">
+        <img src="iml_logo.png" alt="Institut Mittag-Leffler" class="logo">
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Header -->
+        <div class="header">
+            <h1>Seminars this week</h1>
+        </div>
+
+        <!-- Seminars List -->
+        <div class="seminars-container">
+            <!-- Seminar 1 - Example with actual data -->
+            <div class="seminar">
+                <div class="date-time">
+                    <span class="date">Tuesday 18 Nov</span>
+                    <span class="separator">•</span>
+                    <span class="time">09:30-10:30</span>
+                </div>
+                <div class="title">
+                    Björn Stinner: Finite element approximation of rough PDEs on evolving curves
+                </div>
+                <div class="speaker-row">
+                    <span class="speaker-label">Speaker:</span>
+                    <span class="speaker-name">Björn Stinner, University of Warwick</span>
+                </div>
+                <div class="location-row">
+                    <span class="location-label">Location:</span>
+                    <span class="location-name">Kuskvillan</span>
+                </div>
+            </div>
+
+            <!-- Seminar 2 -->
+            <div class="seminar">
+                <div class="date-time">
+                    <span class="date">Tuesday 18 Nov</span>
+                    <span class="separator">•</span>
+                    <span class="time">11:00-12:00</span>
+                </div>
+                <div class="title">
+                    Manuel Solano: The Transfer Path Method: An unfitted-mesh approach
+                </div>
+                <div class="speaker-row">
+                    <span class="speaker-label">Speaker:</span>
+                    <span class="speaker-name">Manuel Solano, Universidad de Concepción</span>
+                </div>
+                <div class="location-row">
+                    <span class="location-label">Location:</span>
+                    <span class="location-name">Kuskvillan</span>
+                </div>
+            </div>
+
+            <!-- Seminar 3 -->
+            <div class="seminar">
+                <div class="date-time">
+                    <span class="date">Wednesday 19 Nov</span>
+                    <span class="separator">•</span>
+                    <span class="time">11:00-12:00</span>
+                </div>
+                <div class="title">
+                    FSF3571 course on CutFEM: Lecture 4: Weak and Strong Stabilization
+                </div>
+                <div class="speaker-row">
+                    <span class="speaker-label">Speaker:</span>
+                    <span class="speaker-name">FSF3571 course on CutFEM</span>
+                </div>
+                <div class="location-row">
+                    <span class="location-label">Location:</span>
+                    <span class="location-name">Kuskvillan</span>
+                </div>
+            </div>
+
+            <!-- Seminar 4 -->
+            <div class="seminar">
+                <div class="date-time">
+                    <span class="date">Thursday 20 Nov</span>
+                    <span class="separator">•</span>
+                    <span class="time">11:00-12:00</span>
+                </div>
+                <div class="title">
+                    Tonatiuh Sanchez-Vizuet: TBA
+                </div>
+                <div class="speaker-row">
+                    <span class="speaker-label">Speaker:</span>
+                    <span class="speaker-name">Tonatiuh Sanchez-Vizuet, University of Arizona</span>
+                </div>
+                <div class="location-row">
+                    <span class="location-label">Location:</span>
+                    <span class="location-name">Kuskvillan</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dynamic data binding simulation
+        // In SmartSign, this data comes from the CSV datasource
+
+        const seminarData = [
+            {
+                date: "Tuesday 18 Nov",
+                time: "09:30-10:30",
+                title: "Björn Stinner: Finite element approximation of rough PDEs on evolving curves",
+                speaker: "Björn Stinner, University of Warwick",
+                location: "Kuskvillan"
+            },
+            {
+                date: "Tuesday 18 Nov",
+                time: "11:00-12:00",
+                title: "Manuel Solano: The Transfer Path Method: An unfitted-mesh approach",
+                speaker: "Manuel Solano, Universidad de Concepción",
+                location: "Kuskvillan"
+            },
+            {
+                date: "Wednesday 19 Nov",
+                time: "11:00-12:00",
+                title: "FSF3571 course on CutFEM: Lecture 4: Weak and Strong Stabilization",
+                speaker: "FSF3571 course on CutFEM",
+                location: "Kuskvillan"
+            },
+            {
+                date: "Thursday 20 Nov",
+                time: "11:00-12:00",
+                title: "Tonatiuh Sanchez-Vizuet: TBA",
+                speaker: "Tonatiuh Sanchez-Vizuet, University of Arizona",
+                location: "Kuskvillan"
+            }
+        ];
+
+        // This simulates how SmartSign would populate the template with CSV data
+        console.log("SmartSign Data Binding:", seminarData);
+    </script>
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, initial-scale=1">
+    <title>SmartSign - Simple Version</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FFC107;
+            background-image: url('iml_background.png');
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+        }
+
+        .logo {
+            position: absolute;
+            top: 123px;
+            transform: translateY(-50%);
+            right: 60px;
+        }
+
+        .logo img {
+            height: 120px;
+            width: auto;
+            display: block;
+            object-fit: contain;
+        }
+
+        .content {
+            padding: 60px 80px;
+        }
+
+        .header {
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 72px;
+            font-weight: bold;
+            color: #084077;
+            margin: 0;
+            padding: 20px 0;
+            font-family: Georgia, serif;
+            line-height: 1.2;
+        }
+
+        .seminar {
+            background: rgba(255, 255, 255, 0.98);
+            border-left: 8px solid #FFC107;
+            border-radius: 0 10px 10px 0;
+            padding: 30px 40px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .date-time {
+            font-size: 30px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .date {
+            color: #084077;
+        }
+
+        .time {
+            color: #E91E63;
+        }
+
+        .title {
+            font-size: 40px;
+            font-weight: bold;
+            color: #084077;
+            margin-bottom: 12px;
+        }
+
+        .speaker {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .speaker-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .speaker-name {
+            color: #084077;
+        }
+
+        .location {
+            font-size: 28px;
+            color: #666;
+        }
+
+        .location-label {
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Logo -->
+    <div class="logo">
+        <img src="iml_logo.png" alt="IML">
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <div class="header">
+            <h1>Seminars this week</h1>
+        </div>
+
+        <!-- Dynamic seminars container -->
+        <div id="seminars-container">
+            <p style="text-align: center; color: #999; padding: 40px; font-size: 18px;">Loading seminars...</p>
+        </div>
+    </div>
+
+    <script>
+        // CSV Parser and Seminar Loader
+        async function loadSeminars() {
+            try {
+                // Fetch CSV file
+                const response = await fetch('/seminarier.csv');
+
+                if (!response.ok) {
+                    console.error('Failed to fetch CSV:', response.status);
+                    showError('Unable to load seminar data');
+                    return;
+                }
+
+                const csvText = await response.text();
+
+                // Parse CSV
+                const seminars = parseCSV(csvText);
+
+                if (seminars.length === 0) {
+                    showNoSeminars();
+                    return;
+                }
+
+                // Render seminars
+                renderSeminars(seminars);
+
+            } catch (error) {
+                console.error('Error loading seminars:', error);
+                showError('Error loading seminar data');
+            }
+        }
+
+        // Simple CSV parser
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            if (lines.length < 2) return [];
+
+            // Parse header
+            const header = parseCSVLine(lines[0]);
+            const indices = {
+                date_formatted: header.indexOf('Date_Formatted'),
+                time: header.indexOf('Time'),
+                title: header.indexOf('Title'),
+                speaker: header.indexOf('Speaker'),
+                location: header.indexOf('Location')
+            };
+
+            // Check if all required columns exist
+            if (Object.values(indices).some(i => i === -1)) {
+                console.error('CSV missing required columns');
+                return [];
+            }
+
+            // Parse data rows
+            const seminars = [];
+            for (let i = 1; i < lines.length; i++) {
+                const values = parseCSVLine(lines[i]);
+                if (values.length === 0) continue;
+
+                seminars.push({
+                    date: values[indices.date_formatted],
+                    time: values[indices.time],
+                    title: values[indices.title],
+                    speaker: values[indices.speaker],
+                    location: values[indices.location]
+                });
+            }
+
+            return seminars;
+        }
+
+        // Parse a single CSV line, handling quoted fields
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let insideQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                const nextChar = line[i + 1];
+
+                if (char === '"') {
+                    if (insideQuotes && nextChar === '"') {
+                        current += '"';
+                        i++;
+                    } else {
+                        insideQuotes = !insideQuotes;
+                    }
+                } else if (char === ',' && !insideQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+
+            result.push(current.trim());
+            return result;
+        }
+
+        // Render seminars to HTML
+        function renderSeminars(seminars) {
+            const container = document.getElementById('seminars-container');
+            container.innerHTML = '';
+
+            seminars.forEach(seminar => {
+                const seminarHTML = `
+                    <div class="seminar">
+                        <div class="date-time">
+                            <span class="date">${escapeHtml(seminar.date)}</span> •
+                            <span class="time">${escapeHtml(seminar.time)}</span>
+                        </div>
+                        <div class="title">
+                            ${escapeHtml(seminar.title)}
+                        </div>
+                        <div class="speaker">
+                            <span class="speaker-label">Speaker:</span>
+                            <span class="speaker-name">${escapeHtml(seminar.speaker)}</span>
+                        </div>
+                        <div class="location">
+                            <span class="location-label">Location:</span>
+                            <span>${escapeHtml(seminar.location)}</span>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += seminarHTML;
+            });
+        }
+
+        // Show "no seminars" message
+        function showNoSeminars() {
+            const container = document.getElementById('seminars-container');
+            container.innerHTML = `
+                <p style="text-align: center; color: #999; padding: 40px; font-size: 18px;">
+                    No seminars this week
+                </p>
+            `;
+        }
+
+        // Show error message
+        function showError(message) {
+            const container = document.getElementById('seminars-container');
+            container.innerHTML = `
+                <p style="text-align: center; color: #d32f2f; padding: 40px; font-size: 18px;">
+                    ${escapeHtml(message)}
+                </p>
+            `;
+        }
+
+        // Escape HTML special characters
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // Load seminars on page load
+        loadSeminars();
+
+        // Auto-refresh every 60 minutes (3600000 ms)
+        setInterval(loadSeminars, 3600000);
+    </script>
+</body>
+</html>

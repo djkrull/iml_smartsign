@@ -1,0 +1,36 @@
+# Excel files
+*.xlsx
+*.xls
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Scripts (except server.py)
+*.bat
+*.sh
+analyze_excel.py
+
+# Git
+.git/
+.gitignore
+
+# Development
+preview.csv
+
+# Vercel specific
+vercel.json
+.vercelignore
+
+# Keep these files
+!seminarier.csv
+!filter_seminarier.py
+!server.py
+!Procfile
+!railway.json
+!start.sh
+!requirements.txt
+!template_simple.html
+!iml_background.png
+!iml_logo.png

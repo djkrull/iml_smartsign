@@ -1,0 +1,29 @@
+# Python files
+*.py
+__pycache__/
+*.pyc
+
+# Excel files
+*.xlsx
+*.xls
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Scripts
+*.bat
+*.sh
+
+# Git
+.git/
+.gitignore
+
+# Development
+preview.csv
+analyze_excel.py
+
+# Only deploy the CSV file
+!seminarier.csv
+!vercel.json

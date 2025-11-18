@@ -1,0 +1,117 @@
+Id,Start date,Start time,End date,End time,Title,Description,Track,Tag(s),Room location,Group(s)
+122861,2025-08-27,0 days 17:00:00,2025-08-27,0 days 18:30:00,Welcome to IML: Informal get together,,,,Gula villan,
+122862,2025-08-28,0 days 10:00:00,2025-08-28,0 days 10:30:00,Morning coffee,"<p>Gathering in ""Blomsterruimmet"" for coffe.</p>
+",,,Main building,
+122863,2025-08-28,0 days 17:00:00,2025-08-28,0 days 18:30:00,Welcome to IML: Informal get together,,,,Gula villan,
+122864,2025-08-29,0 days 10:00:00,2025-08-29,0 days 10:30:00,Morning coffee,"<p>Gathering in ""Blomsterruimmet"" for coffe.</p>
+",,,Main building,
+122810,2025-09-01,0 days 10:15:00,2025-09-01,0 days 10:30:00,Welcome,,,,Kuskvillan,
+122806,2025-09-01,0 days 10:30:00,2025-09-01,0 days 11:00:00,"WS,Leslie Greengard: Lightweight, geometrically flexible algorithms for the evaluation of layer and volume potentials","<p><b>Speaker</b><br />
+Leslie Greengard,New York University<br />
+<br />
+<b>Abstract</b><br />
+Over the last two decades, a variety of fast, robust, and high-order accurate methods have been developed for solving elliptic and parabolic PDEs in complicated geometry using potential theory. In this approach, rather than discretizing the partial differential equation itself, one first evaluates a volume integral to account for the source distribution within the domain, followed by solving a boundary integral equation to impose the specified boundary conditions.<br />
+<br />
+We present a new set of algorithms which is easy to implement and compatible with virtually any discretization technique, including unstructured domain triangulations, such as those used in standard finite element or finite volume methods. Our approach combines earlier work on potential theory for the heat equation, asymptotic analysis, the nonuniform fast Fourier transform (NUFFT), and the dual-space multilevel kernel-splitting (DMK) framework. It is insensitive to flaws in the triangulation, permitting not just nonconforming elements, but arbitrary aspect ratio triangles, gaps and various other degeneracies. On a single CPU core, the scheme computes the solution at a rate comparable to that of the FFT in work per gridpoint.<br />
+<br />
+This is joint work with Fredrik Fryklund, Shidong Jiang and Jun Wang.</p>
+",,website,Kuskvillan,
+122820,2025-09-01,0 days 11:00:00,2025-09-01,0 days 11:30:00,"WS, Björn Engquist: Numerical Methodologies for Multiscale Limits, homogenization and interfaces","<p><b>Speaker</b><br />
+Björn Engquist,The University of Texas at Austin<br />
+<br />
+<b>Abstract</b><br />
+The computational challenge from multiscale differential equations where the smallest scales cannot be practically resolved on the computational mesh has inspired development of a variety of methodologies. We will consider two settings. One where the smaller scales are all over the computational domain and the analytic limit is homogenization and another where the small scales are localized and the analytic limit is an interface. Many of the numerical techniques require scale separation but there are also efforts to reduce the dependence on substantial scale gaps. These, so called, seamless methods mimic the limiting process by rescaling. There is similarity to turbulence modeling, artificial compressibility for incompressible flow and the Car-Parinello technique for molecular dynamics. We will introduce the methodology, present some analysis and numerical examples.</p>
+",,website,Kuskvillan,
+122818,2025-09-01,0 days 12:00:00,2025-09-01,0 days 13:00:00,Lunch,,,,Gula villan,
+122813,2025-09-01,0 days 14:00:00,2025-09-01,0 days 14:30:00,"WS, Anna Scotti: N-1 dimensional interfaces: mixed formulation and discretization methods","<p><b>Speaker</b><br />
+Anna Scotti,Politecnico di Milano<br />
+<br />
+<b>Abstract</b><br />
+We present an overview on mixed dimensional problems arising from the dimensional reduction of embedded subdomains, focusing on elliptic problems in mixed form . This is the case, for instance, of the Darcy problem in the presence of fractures, [1], or the electrostatic problem with a thin heterogeneous layers, [2]. The co-dimension subdomain is not merely an interface, but we solve a reduced PDE coupled with the surrounding ”bulk” problem. In this talk we outline the strategy to derive such reduced problem, [3], discussing the most common assumptions and the treatment of coupling conditions in mixed form, and then proceed to discuss discretization strategies with their advantages and limitations: the choice of conforming or<br />
+non-conforming grids and the monolithic versus iterative solution of the resulting linear system [4]. Finally, we discuss convergence in the presence of modeling error and numerical error, and present some applications to real life problems.<br />
+<br />
+References<br />
+[1] D’Angelo, C., Scotti A., A mixed finite element method for Darcy flow in fractured porous media with non-matching grids , ESAIM: M2AN 46 (2012)<br />
+[2] Fumagalli A., Panzeri L., Formaggia L., Scotti A., Arosio D., A mixed-dimensional model for direct current simulations in the presence of a thin high-resistivity liner, Int J Numer Methods Eng. 2023;e7407 (2023)<br />
+[3] Martin V., Jaffré J., Roberts J.E., A mixed-dimensional model for direct current simulations in the presence of a thin high-resistivity liner, SIAM J. SCI. COMPUT. Vol. 26, No. 5 (2005)<br />
+[4] Berrone S., D’Auria A., Scialò S., An optimization approach for flow simulations in poro-fractured media with complex geometries, Computational Geosciences 25:897–910 (2021)</p>
+",,website,Kuskvillan,
+122809,2025-09-01,0 days 14:30:00,2025-09-01,0 days 15:00:00,"WS, Michael O'Neil: Mie scattering in layered media","<p><b>Speaker</b><br />
+Michael O'Neil,New York University<br />
+<br />
+<b>Abstract</b><br />
+The Mie (or Mie-Lorenz-Debye) representation of time-harmonic electromagnetic fields in the exterior of a sphere is a classic result in mathematical physics from the early 1900s. Such a representation gives way to semi-explicit scattering matrices in terms of expansion coefficients, and serves as a gold-standard benchmark for many frequency-domain scattering codes. In this talk it is shown that the formulation can be extended to planarly layered media, and in many cased decoupling the electric and magnetic data and simplifying the resulting formulae and numerics.</p>
+",,website,Kuskvillan,
+122807,2025-09-01,0 days 15:00:00,2025-09-01,0 days 15:30:00,Coffeebreak,,,,,
+122814,2025-09-01,0 days 15:30:00,2025-09-01,0 days 16:00:00,"WS, Mats Larson: Weak and Strong Stabilization of Cut Finite Elements","<p><b>Speaker</b><br />
+Mats Larson,Umeå University<br />
+<br />
+<b>Abstract</b><br />
+We review stabilization strategies for cut finite element methods and clarify how they relate. The classical approach augments the variational formulation with ghost-penalty terms that control the variation of finite element functions on cut elements. An alternative introduces a discrete extension operator and solves in a subspace of the finite element space, eliminating unstable degrees of freedom while retaining optimal approximation properties. We show that these viewpoints fit into a unified stabilization framework that satisfies standard abstract conditions and yields stable, optimally convergent methods for second-order elliptic problems. Moreover, with a robustly designed ghost penalty, the stabilization parameter can be taken to infinity without locking; in this limit, the method enforces algebraic constraints identical to those used in specific extension-operator formulations, revealing a close connection between stabilization and extension approaches. Several application examples illustrate the concepts.</p>
+",,website,Kuskvillan,
+122808,2025-09-01,0 days 16:00:00,2025-09-01,0 days 16:30:00,"WS, Axel Voigt: Towards a two-scale model for morphogenesis - How cellular processes influence tissue deformations","<p><b>Speaker</b><br />
+Axel Voigt,Technische Universität Dresden<br />
+<br />
+<b>Abstract</b><br />
+We propose a two-scale model to resolve essential features of developmental tissue deformations. The model couples individual cellular behavior to the mechanics at tissue scale. This is realized by a multiphase-field model addressing the motility, deformability and interaction of cells on an evolving surface. The surface evolution is due to bending elasticity, with bending properties influenced by the topology of the cellular network, which forms the surface. We discuss and motivate model assumptions, propose a numerical scheme, which essentially scales with the number of cells, and explore computationally the effect of the two-scale coupling on the global shape evolution. The approach provides a step towards more quantitative modeling of morphogenetic processes.</p>
+",,website,Kuskvillan,
+122865,2025-09-02,0 days 09:30:00,2025-09-02,0 days 10:00:00,"WS, Travis Askham: Integral formulations and numerical methods for a class of half-space interface problems","<p><b>Speaker</b><br />
+Travis Askham, New Jersey Institute of Technology</p>
+
+<p><b>Abstract</b><br />
+A number of multi-scale phenomena are modeled by<br />
+coupled bulk-surface partial differential equation systems. For example,<br />
+flexural-gravity models for ice floes couple bending forces in the ice to<br />
+fluid flow in the sea, resulting in a Laplace equation in the half-space<br />
+with a fourth order surface differential equation as a boundary condition on<br />
+$z=0$. A collection of similar problems can be found in the literature, where<br />
+the boundary effects include flexural, elastic, viscous, thermal, or surface<br />
+tension effects, and the bulk equations include potential flow and acoustic<br />
+wave equations. In the case of the half space, there is a particularly effective<br />
+numerical approach for this class of problems characterized by the use of a<br />
+nested integral representation for the solution. We will present the main ideas<br />
+behind the representations and an acceleration scheme for the associated<br />
+Green's functions, which do not satisfy a PDE on surface. This is joint work<br />
+with Peter Nekrasov, Tristan Goodwill, Jeremy Hoskins (U. Chicago), and<br />
+Manas Rachh (IIT Bombay).</p>
+",,website,Kuskvillan,
+122823,2025-09-02,0 days 10:00:00,2025-09-02,0 days 10:30:00,"WS, Erik Burman: Unfitted finite element methods for ill-posed interface problems","<p><b>Speaker</b><br />
+Erik Burman,University College London<br />
+<br />
+<b>Abstract</b><br />
+In this talk we will consider recent advances on the approximation of second order elliptic problems with interfaces that have poor, non-standard stability, or are ill-posed. Such problems arise in a multitude of applications for example in seismic inversion problems or the design of meta materials. As a model problem we will consider the classical ill-posed problem of unique continuation in a heterogeneous environment. First we will discuss primal-dual stabilized finite elements for the homogeneous case and recall recent results on the accuracy and optimality of such methods. Then we will show how the method can be modified to handle internal interfaces using an unfitted finite element method. We will report error estimates for this method and discuss how to handle the destabilizing effect of error in the geometrical data. Finally we will show how the ideas can be applied to so-called sign changing problems, where the coefficient of the diffusion operator is of different sign in different subdomain. The accurate approximation of wave propagation in such materials are important for the design of meta-materials and the modelling of cloaking.</p>
+",,website,Kuskvillan,
+122822,2025-09-02,0 days 10:30:00,2025-09-02,0 days 11:10:00,Coffeebreak,,,,,
+122819,2025-09-02,0 days 11:10:00,2025-09-02,0 days 11:30:00,"WS, Joar Bagge: Rigid particles and deformable capsules in wall-bounded Stokes flow","<p><b>Speaker</b><br />
+Joar Bagge,The University of Texas at Austin<br />
+<br />
+<b>Abstract</b><br />
+Stokesian flows of particles and capsules are of interest in various industrial, biological and medical processes, one example being blood flow through the capillaries. In this talk, I will discuss boundary integral formulations and discretizations of rigid particles, rigid walls and deformable capsules. Special quadrature methods for singular integrands are needed to compute the boundary integrals. For the capsules, stabilization may also be needed for simulations over long time. Furthermore, a fast summation method is needed for large-scale problems; here, I present a few results for our fast Ewald summation method. Finally, I will briefly discuss how skeletonization can be used to compress far-field interactions between well-separated objects.</p>
+",,website,Kuskvillan,
+122816,2025-09-02,0 days 11:30:00,2025-09-02,0 days 11:50:00,"WS, Nanna Berre: Cut Finite Element Methods for Poroelasticity","<p><b>Speaker</b><br />
+Nanna Berre,Norwegian University of Science and Technology<br />
+<br />
+<b>Abstract</b><br />
+In this presentation, we introduce cut finite element methods for the numerical solution of Biot’s consolidation model for poroelasticity. This model describes the coupled deformation of an elastic porous medium and the viscous fluid flow within it, making it crucial for applications in geoscience, medicine, and biophysics. These applications often involve domains with complex and intricate geometries, posing significant challenges for generating high-quality volumetric meshes suitable for simulation. To address this issue, we employ unfitted finite element methods, where the domain boundary is represented independently of the background mesh, significantly simplifying the meshing process.</p>
+
+<p>Our approach combines the total pressure formulation from [2, 3] with unfitted finite element techniques [1], resulting in geometrically robust solution schemes. We demonstrate how our formulation enables us to establish stability and derive a priori error estimates comparable to those in [2, 3]. Finally, we present comprehensive numerical results to validate our theoretical findings and discuss the strengths and limitations of the proposed methods, including their robustness with respect to problem parameters.</p>
+
+<p>References<br />
+[1] E. Burman, S. Claus, P. Hansbo, M. G. Larson, and A. Massing. CutFEM: discretizing geometry and partial differential equations. Int. J. Numer. Meth. Engng., Vol. 104, pp. 472–501, 2015.<br />
+[2] R. Oyarzua, R. Ruiz-Baier, Locking-free finite element methods for poroelasticity. SIAM J. NUMER. ANAL., Vol. 54, No. 5 pp. 2951–2973, 2016.<br />
+[3] J. J. Lee, K.-A. Mardal, R. Winther Parameter-robust discretization and preconditioning ofBiot’s consolidation model. SIAM J. SCI. COMPUT., Vol. 39, No. 1 pp. A1-A24, 2016.</p>
+",,website,Kuskvillan,
+122817,2025-09-02,0 days 12:00:00,2025-09-02,0 days 13:00:00,Lunch,,,,Gula villan,
+122812,2025-09-02,0 days 14:00:00,2025-09-02,0 days 14:30:00,"WS, Antonio Huerta: NURBS-Embedded HDG for Incompressible Flows","<p><b>Speaker</b><br />
+Antonio Huerta,Polytechnic University of Catalonia<br />
+<br />
+<b>Abstract</b><br />
+A high-order, degree-adaptive Hybridizable Discontinuous Galerkin (HDG) method is presented for incompressible flows, governed by either the Stokes or Navier–Stokes equations, with boundaries and interfaces exactly described by NURBS. The geometries are embedded in a fixed Cartesian mesh, resulting in an unfitted HDG scheme that captures complex geometrical features without the need for curved, body-fitted high-order element meshes.<br />
+To enable accurate integration over these embedded geometries, the method employs the NURBS-Enhanced Finite Element Method (NEFEM) for quadrature in elements intersected by NURBS curves [1,2]. Dirichlet and Neumann boundary conditions are handled seamlessly at any polynomial order. Importantly, the method retains the HDG structure, with global unknowns defined only on the mesh skeleton, and no additional degrees of freedom on non-conforming boundaries or interfaces.<br />
+This NURBS-embedded HDG framework (unfitted HDG-NEFEM method) combines non-conforming Cartesian grids, exact CAD-based geometry, and high-order accuracy, enabling robust and precise simulations even on coarse meshes. While the method was initially developed for two-fluid Stokes flows [3], it extends naturally to incompressible Navier–Stokes problems, maintaining optimal convergence and robustness, even in the presence of severely cut elements.<br />
+Numerical results confirm the method’s accuracy, stability, and effectiveness in capturing high-fidelity flow features, including applications to microfluidic systems directly from CAD models.<br />
+<br />
+[1] R. Sevilla, S. Fernández-Méndez, A. Huerta, ""NURBS-enhanced finite element method (NEFEM),"" International Journal for Numerical Methods in Engineering, 76(1), pp. 56–83 (2008).<br />
+[2] R. Sevilla, A. Huerta, ""HDG-NEFEM with Degree Adaptivity for Stokes Flows,” Journal of Scientific Computing, 77(3), pp. 1953–1980 (2018).<br />
+[3] S. Piccardo, M. Giacomini, A. Huerta, ""An unfitted high-order HDG method for two-fluid Stokes flow with exact NURBS geometries,"" Journal of Computational Physics, 512, 113143 (2024).</p>
+",,website,Kuskvillan,

@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "name": "smartsign-seminarier",
+  "builds": [
+    {
+      "src": "seminarier.csv",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/seminarier.csv",
+      "dest": "/seminarier.csv",
+      "headers": {
+        "Cache-Control": "public, max-age=300",
+        "Content-Type": "text/csv; charset=utf-8",
+        "Access-Control-Allow-Origin": "*"
+      }
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/seminarier.csv"
+    }
+  ]
+}
