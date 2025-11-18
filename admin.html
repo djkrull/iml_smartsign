@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartSign Admin - Update Seminars</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+
+        .drop-zone {
+            border: 3px dashed #667eea;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            margin-bottom: 25px;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            background: #f0f2ff;
+            border-color: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .drop-zone.dragover {
+            background: #e8ebff;
+            border-color: #667eea;
+        }
+
+        .drop-zone-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .drop-zone-text {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .drop-zone-subtext {
+            color: #999;
+            font-size: 13px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .selected-file {
+            background: #e8f5e9;
+            border: 1px solid #81c784;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .selected-file.visible {
+            display: flex;
+        }
+
+        .selected-file-icon {
+            font-size: 24px;
+        }
+
+        .selected-file-info {
+            flex: 1;
+        }
+
+        .selected-file-name {
+            color: #2e7d32;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .selected-file-size {
+            color: #558b2f;
+            font-size: 12px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-upload {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-upload:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-upload:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-clear {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .btn-clear:hover:not(:disabled) {
+            background: #e0e0e0;
+        }
+
+        .btn-clear:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .status.visible {
+            display: block;
+        }
+
+        .status.loading {
+            background: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #90caf9;
+        }
+
+        .status.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #81c784;
+        }
+
+        .status.error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef5350;
+        }
+
+        .status-icon {
+            display: inline-block;
+            margin-right: 8px;
+            font-size: 18px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #667eea;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .info-box {
+            background: #f5f5f5;
+            border-left: 4px solid #667eea;
+            padding: 12px 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .info-box strong {
+            color: #333;
+        }
+
+        .step-list {
+            list-style: none;
+            padding: 0;
+            margin: 8px 0 0 0;
+        }
+
+        .step-list li {
+            padding: 4px 0;
+        }
+
+        .step-list li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">📊</div>
+            <h1>SmartSign Admin</h1>
+            <p>Update your seminar display in one click</p>
+        </div>
+
+        <div class="drop-zone" id="dropZone">
+            <div class="drop-zone-icon">📁</div>
+            <div class="drop-zone-text">Drop your Excel file here</div>
+            <div class="drop-zone-subtext">or click to browse</div>
+            <input type="file" id="fileInput" class="file-input" accept=".xlsx,.xls" />
+        </div>
+
+        <div class="selected-file" id="selectedFile">
+            <div class="selected-file-icon">✅</div>
+            <div class="selected-file-info">
+                <div class="selected-file-name" id="fileName"></div>
+                <div class="selected-file-size" id="fileSize"></div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-upload" id="uploadBtn" disabled>Update Seminars</button>
+            <button class="btn-clear" id="clearBtn" disabled>Clear</button>
+        </div>
+
+        <div class="button-group" id="deployGroup" style="display: none; margin-top: 10px;">
+            <button class="btn-upload" id="deployBtn">Deploy Now</button>
+        </div>
+
+        <div class="status" id="status"></div>
+
+        <div class="info-box">
+            <strong>How it works:</strong>
+            <ul class="step-list">
+                <li>Drag your Excel file here</li>
+                <li>Click "Update & Deploy"</li>
+                <li>System converts to CSV</li>
+                <li>Deploys to production</li>
+                <li>Display updates automatically</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const selectedFile = document.getElementById('selectedFile');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const deployBtn = document.getElementById('deployBtn');
+        const deployGroup = document.getElementById('deployGroup');
+        const status = document.getElementById('status');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+
+        let selectedFileData = null;
+
+        // Drag and drop
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            // Validate file type
+            if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+                showError('❌ Invalid file type. Please upload an Excel file (.xlsx or .xls)');
+                return;
+            }
+
+            // Validate file size (max 10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                showError('❌ File is too large. Maximum size is 10MB');
+                return;
+            }
+
+            selectedFileData = file;
+
+            // Show selected file
+            fileName.textContent = file.name;
+            fileSize.textContent = `${(file.size / 1024).toFixed(1)} KB`;
+            selectedFile.classList.add('visible');
+
+            // Enable buttons
+            uploadBtn.disabled = false;
+            clearBtn.disabled = false;
+
+            // Clear status
+            status.classList.remove('visible');
+        }
+
+        clearBtn.addEventListener('click', () => {
+            selectedFileData = null;
+            fileInput.value = '';
+            selectedFile.classList.remove('visible');
+            uploadBtn.disabled = true;
+            clearBtn.disabled = true;
+            status.classList.remove('visible');
+        });
+
+        uploadBtn.addEventListener('click', () => {
+            if (!selectedFileData) return;
+            uploadFile(selectedFileData);
+        });
+
+        deployBtn.addEventListener('click', () => {
+            deployNow();
+        });
+
+        async function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            uploadBtn.disabled = true;
+            clearBtn.disabled = true;
+            deployGroup.style.display = 'none';
+
+            showLoading('Processing your Excel file...');
+
+            try {
+                const response = await fetch('http://localhost:9000/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok || data.success) {
+                    showSuccess(data.message);
+                    // Show deploy button as option
+                    deployGroup.style.display = 'flex';
+                } else {
+                    showError(data.error || 'An error occurred');
+                    uploadBtn.disabled = false;
+                    clearBtn.disabled = false;
+                    deployGroup.style.display = 'none';
+                }
+            } catch (error) {
+                showError(`Connection error: ${error.message}`);
+                uploadBtn.disabled = false;
+                clearBtn.disabled = false;
+                deployGroup.style.display = 'none';
+            }
+        }
+
+        async function deployNow() {
+            deployBtn.disabled = true;
+
+            showLoading('Deploying to production...');
+
+            try {
+                const response = await fetch('http://localhost:9000/api/deploy', {
+                    method: 'POST'
+                });
+
+                const data = await response.json();
+
+                if (response.ok || data.success) {
+                    showSuccess(data.message);
+                    setTimeout(() => {
+                        clearBtn.click();
+                    }, 2000);
+                } else {
+                    showError(data.message || 'Deployment issue - will update automatically');
+                    deployBtn.disabled = false;
+                }
+            } catch (error) {
+                showError(`Error: ${error.message}`);
+                deployBtn.disabled = false;
+            }
+        }
+
+        function showLoading(message) {
+            status.innerHTML = `
+                <div>
+                    <span class="spinner"></span>
+                    <span>${message}</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 45%;"></div>
+                </div>
+            `;
+            status.className = 'status loading visible';
+        }
+
+        function showSuccess(message) {
+            status.innerHTML = `
+                <span class="status-icon">✅</span>
+                <strong>Success!</strong><br/>
+                ${message}
+                <ul class="step-list" style="margin-top: 8px;">
+                    <li>CSV file updated</li>
+                    <li>Deployed to production</li>
+                    <li>Display will update soon</li>
+                </ul>
+            `;
+            status.className = 'status success visible';
+        }
+
+        function showError(message) {
+            status.innerHTML = `
+                <span class="status-icon">❌</span>
+                <strong>Error</strong><br/>
+                ${message}
+            `;
+            status.className = 'status error visible';
+        }
+    </script>
+</body>
+</html>
