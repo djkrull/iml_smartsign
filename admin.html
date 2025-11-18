@@ -309,9 +309,6 @@
             <button class="btn-clear" id="clearBtn" disabled>Clear</button>
         </div>
 
-        <div class="button-group" id="deployGroup" style="display: none; margin-top: 10px;">
-            <button class="btn-upload" id="deployBtn">Deploy Now</button>
-        </div>
 
         <div class="status" id="status"></div>
 
@@ -333,8 +330,6 @@
         const selectedFile = document.getElementById('selectedFile');
         const uploadBtn = document.getElementById('uploadBtn');
         const clearBtn = document.getElementById('clearBtn');
-        const deployBtn = document.getElementById('deployBtn');
-        const deployGroup = document.getElementById('deployGroup');
         const status = document.getElementById('status');
         const fileName = document.getElementById('fileName');
         const fileSize = document.getElementById('fileSize');
@@ -410,22 +405,17 @@
             uploadFile(selectedFileData);
         });
 
-        deployBtn.addEventListener('click', () => {
-            deployNow();
-        });
-
         async function uploadFile(file) {
             const formData = new FormData();
             formData.append('file', file);
 
             uploadBtn.disabled = true;
             clearBtn.disabled = true;
-            deployGroup.style.display = 'none';
 
             showLoading('Processing your Excel file...');
 
             try {
-                const response = await fetch('http://localhost:9000/api/upload', {
+                const response = await fetch('/api/upload', {
                     method: 'POST',
                     body: formData
                 });
@@ -434,46 +424,19 @@
 
                 if (response.ok || data.success) {
                     showSuccess(data.message);
-                    // Show deploy button as option
-                    deployGroup.style.display = 'flex';
+                    // Auto-clear after 3 seconds
+                    setTimeout(() => {
+                        clearBtn.click();
+                    }, 3000);
                 } else {
                     showError(data.error || 'An error occurred');
                     uploadBtn.disabled = false;
                     clearBtn.disabled = false;
-                    deployGroup.style.display = 'none';
                 }
             } catch (error) {
                 showError(`Connection error: ${error.message}`);
                 uploadBtn.disabled = false;
                 clearBtn.disabled = false;
-                deployGroup.style.display = 'none';
-            }
-        }
-
-        async function deployNow() {
-            deployBtn.disabled = true;
-
-            showLoading('Deploying to production...');
-
-            try {
-                const response = await fetch('http://localhost:9000/api/deploy', {
-                    method: 'POST'
-                });
-
-                const data = await response.json();
-
-                if (response.ok || data.success) {
-                    showSuccess(data.message);
-                    setTimeout(() => {
-                        clearBtn.click();
-                    }, 2000);
-                } else {
-                    showError(data.message || 'Deployment issue - will update automatically');
-                    deployBtn.disabled = false;
-                }
-            } catch (error) {
-                showError(`Error: ${error.message}`);
-                deployBtn.disabled = false;
             }
         }
 
