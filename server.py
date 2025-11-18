@@ -173,6 +173,33 @@ def process_excel_to_csv(excel_file):
             else:
                 speaker = row.get('Speaker', '')
 
+            # Get title
+            title = row.get('Title', '')
+
+            # Smart parsing: If speaker is empty but title contains "Name: Title" format, parse it
+            # e.g., "Genming Bai: TBA" → Speaker="Genming Bai", Title="TBA"
+            if (not speaker or str(speaker).strip() == '' or str(speaker).lower() == 'nan') and ':' in str(title):
+                parts = str(title).split(':', 1)
+                if len(parts) == 2:
+                    potential_speaker = parts[0].strip()
+                    potential_title = parts[1].strip()
+
+                    # Only parse if left side looks like a person's name (not a course code or long title)
+                    # Heuristics:
+                    # - Should be relatively short (< 60 chars, typically names are 20-40 chars)
+                    # - Should not contain numbers at the start (like "FSF3571")
+                    # - Should not contain certain course-like keywords ("course", "lecture", "module", "seminar" in the left part)
+                    # - Should not contain slashes or URLs
+                    course_keywords = ['course', 'lecture', 'module', 'seminar', 'workshop', 'session', 'tutorial']
+                    has_course_keyword = any(keyword in potential_speaker.lower() for keyword in course_keywords)
+                    looks_like_code = potential_speaker and potential_speaker[0].isdigit()
+
+                    if (potential_speaker and len(potential_speaker) < 60 and
+                        not has_course_keyword and not looks_like_code and
+                        not potential_speaker.startswith('http') and '/' not in potential_speaker):
+                        speaker = potential_speaker
+                        title = potential_title
+
             # Get location
             if is_projectplace_format:
                 location = row.get('Room location', '')
@@ -182,7 +209,7 @@ def process_excel_to_csv(excel_file):
             # Add to results
             filtered_rows.append({
                 'Title_Original': row.get('Title', ''),
-                'Title': row.get('Title', ''),
+                'Title': title,
                 'Speaker': speaker,
                 'Date': seminar_date.isoformat(),
                 'Date_Formatted': seminar_date.strftime('%A %d %b').capitalize(),
