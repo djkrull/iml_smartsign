@@ -52,15 +52,62 @@ def parse_date(date_value):
             return None
 
 
+def convert_timedelta_to_time_str(td_value):
+    """Convert timedelta seconds to HH:MM format"""
+    if pd.isna(td_value):
+        return None
+
+    try:
+        # If it's a timedelta object
+        if isinstance(td_value, timedelta):
+            total_seconds = int(td_value.total_seconds())
+            hours = total_seconds // 3600
+            minutes = (total_seconds % 3600) // 60
+            return f"{hours:02d}:{minutes:02d}"
+        # If it's already a string, return as is
+        elif isinstance(td_value, str):
+            return td_value
+        else:
+            return None
+    except:
+        return None
+
+
+def extract_speaker_from_description(desc_html):
+    """Extract speaker from HTML description (format: <b>Speaker</b><br/>Name, Institution<br/>)"""
+    if not desc_html or pd.isna(desc_html):
+        return ''
+
+    try:
+        desc_str = str(desc_html)
+        # Look for <b>Speaker</b> tag and extract the following text
+        if '<b>Speaker</b>' in desc_str:
+            start_idx = desc_str.find('<b>Speaker</b>') + len('<b>Speaker</b>')
+            end_idx = desc_str.find('<br/>', start_idx)
+            if end_idx == -1:
+                end_idx = desc_str.find('<br />', start_idx)
+            if end_idx == -1:
+                end_idx = start_idx + 200  # Fallback: take next 200 chars
+
+            speaker_text = desc_str[start_idx:end_idx].strip()
+            # Remove any remaining HTML tags
+            speaker_text = speaker_text.replace('<br/>', '').replace('<br />', '').strip()
+            return speaker_text
+        else:
+            return ''
+    except:
+        return ''
+
+
 def process_excel_to_csv(excel_file):
-    """Process Excel file and generate CSV"""
+    """Process Excel file and generate CSV - supports both simple and ProjectPlace export formats"""
     try:
         # Read Excel
         xls = pd.ExcelFile(excel_file)
 
         # Find correct sheet
         sheet_name = None
-        for name in ['Data', 'data', 'Seminars', 'seminars', 'Program', 'program']:
+        for name in ['Data', 'data', 'Seminars', 'seminars', 'Program', 'program', 'ExportedPrograms']:
             if name in xls.sheet_names:
                 sheet_name = name
                 break
@@ -72,6 +119,9 @@ def process_excel_to_csv(excel_file):
 
         if df.empty:
             return False, "Excel file is empty", 0
+
+        # Detect format (ProjectPlace export vs simple format)
+        is_projectplace_format = 'Start date' in df.columns and 'Start time' in df.columns
 
         # Filter seminars
         week_start = get_current_week_start()
@@ -85,8 +135,12 @@ def process_excel_to_csv(excel_file):
             if 'website' not in tags.lower():
                 continue
 
-            # Parse date
-            date_value = row.get('Date', None)
+            # Parse date based on format
+            if is_projectplace_format:
+                date_value = row.get('Start date', None)
+            else:
+                date_value = row.get('Date', None)
+
             seminar_date = parse_date(date_value)
 
             if seminar_date is None:
@@ -96,27 +150,44 @@ def process_excel_to_csv(excel_file):
             if not (week_start <= seminar_date <= week_end):
                 continue
 
+            # Parse time based on format
+            if is_projectplace_format:
+                time_value = convert_timedelta_to_time_str(row.get('Start time', None))
+            else:
+                time_value = str(row.get('Time', ''))
+
             # Check if future event
-            time_value = str(row.get('Time', ''))
             if time_value and time_value.lower() != 'nan':
                 try:
-                    start_time_str = time_value.split('-')[0].strip()
+                    start_time_str = time_value.split('-')[0].strip() if '-' in time_value else time_value
                     start_time = pd.to_datetime(start_time_str, format='%H:%M').time()
                     event_datetime = datetime.combine(seminar_date, start_time)
                     if event_datetime < current_time:
                         continue
                 except:
-                    pass
+                    pass  # If time parsing fails, don't skip the event
+
+            # Extract speaker
+            if is_projectplace_format:
+                speaker = extract_speaker_from_description(row.get('Description', ''))
+            else:
+                speaker = row.get('Speaker', '')
+
+            # Get location
+            if is_projectplace_format:
+                location = row.get('Room location', '')
+            else:
+                location = row.get('Location', '')
 
             # Add to results
             filtered_rows.append({
                 'Title_Original': row.get('Title', ''),
                 'Title': row.get('Title', ''),
-                'Speaker': row.get('Speaker', ''),
+                'Speaker': speaker,
                 'Date': seminar_date.isoformat(),
                 'Date_Formatted': seminar_date.strftime('%A %d %b').capitalize(),
-                'Time': row.get('Time', ''),
-                'Location': row.get('Location', ''),
+                'Time': time_value if time_value else '',
+                'Location': location,
             })
 
         if not filtered_rows:
