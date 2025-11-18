@@ -222,7 +222,7 @@ def run_server():
     port = int(os.environ.get('PORT', 8080))
 
     print("=" * 80)
-    print("SMARTSIGN TEMPLATE & DATA SERVER")
+    print("SMARTSIGN - DISPLAY & ADMIN SERVER (Flask)")
     print("=" * 80)
     print(f"Server running on port {port}")
     print(f"Display template: http://localhost:{port}/")
@@ -231,7 +231,7 @@ def run_server():
     print(f"Health check:     http://localhost:{port}/health")
     print("=" * 80)
 
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(host='0.0.0.0', port=port, debug=False, threaded=True)
 
 
 if __name__ == "__main__":
