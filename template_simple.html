@@ -60,19 +60,34 @@
             line-height: 1.2;
         }
 
+        /* Optimized for 4 seminars visibility */
+        .seminars-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #seminars-container {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
         .seminar {
             background: rgba(255, 255, 255, 0.98);
             border-left: 8px solid #FFC107;
             border-radius: 0 10px 10px 0;
-            padding: 30px 40px;
-            margin-bottom: 20px;
+            padding: 18px 28px;
+            margin-bottom: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
         .date-time {
-            font-size: 30px;
+            font-size: 20px;
             font-weight: 600;
-            margin-bottom: 12px;
+            margin-bottom: 6px;
         }
 
         .date {
@@ -84,15 +99,15 @@
         }
 
         .title {
-            font-size: 40px;
+            font-size: 24px;
             font-weight: bold;
             color: #084077;
-            margin-bottom: 12px;
+            margin-bottom: 6px;
         }
 
         .speaker {
-            font-size: 30px;
-            margin-bottom: 8px;
+            font-size: 16px;
+            margin-bottom: 4px;
         }
 
         .speaker-label {
@@ -105,7 +120,7 @@
         }
 
         .location {
-            font-size: 28px;
+            font-size: 16px;
             color: #666;
         }
 
@@ -123,7 +138,7 @@
     <!-- Content -->
     <div class="content">
         <div class="header">
-            <h1>Seminars this week</h1>
+            <h1>Upcoming Seminars</h1>
         </div>
 
         <!-- Dynamic seminars container -->
