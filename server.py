@@ -7,70 +7,63 @@ Optimized for Railway deployment
 """
 
 import os
-import mimetypes
-from http.server import HTTPServer, SimpleHTTPRequestHandler
-from functools import partial
+from http.server import HTTPServer, BaseHTTPRequestHandler
 
-class SmartSignRequestHandler(SimpleHTTPRequestHandler):
+class SmartSignRequestHandler(BaseHTTPRequestHandler):
     """HTTP request handler for SmartSign template and data"""
-
-    def end_headers(self):
-        """Add CORS and cache headers to all responses"""
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
-
-        # Set cache headers based on content type
-        if self.path.endswith('.csv'):
-            # CSV: short cache (5 minutes) - data changes daily
-            self.send_header('Cache-Control', 'public, max-age=300')
-        elif self.path.endswith(('.png', '.jpg', '.jpeg')):
-            # Images: longer cache (24 hours) - assets don't change often
-            self.send_header('Cache-Control', 'public, max-age=86400')
-        elif self.path.endswith('.html'):
-            # HTML: short cache (5 minutes) - template may be updated
-            self.send_header('Cache-Control', 'public, max-age=300')
-        else:
-            # Default: 5 minutes
-            self.send_header('Cache-Control', 'public, max-age=300')
-
-        super().end_headers()
 
     def do_OPTIONS(self):
         """Handle OPTIONS requests for CORS preflight"""
         self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.end_headers()
 
     def do_GET(self):
         """Handle GET requests"""
         path = self.path
 
+        # Log the request
+        print(f"[REQUEST] {path}")
+
         # Root path (/) serves template_simple.html
         if path == '/' or path == '/index.html':
-            return self.serve_file('template_simple.html', 'text/html; charset=utf-8')
+            self.serve_file('template_simple.html', 'text/html; charset=utf-8')
+            return
 
         # /seminarier.csv serves the CSV data file
-        elif path == '/seminarier.csv':
-            return self.serve_file('seminarier.csv', 'text/csv; charset=utf-8')
+        if path == '/seminarier.csv':
+            self.serve_file('seminarier.csv', 'text/csv; charset=utf-8')
+            return
 
-        # Serve static assets
-        elif path.endswith('.png'):
-            return self.serve_file(path.lstrip('/'), 'image/png')
+        # Serve static assets (PNG)
+        if path.endswith('.png'):
+            filename = path.lstrip('/')
+            self.serve_file(filename, 'image/png')
+            return
 
-        elif path.endswith('.jpg') or path.endswith('.jpeg'):
-            return self.serve_file(path.lstrip('/'), 'image/jpeg')
+        # Serve static assets (JPG/JPEG)
+        if path.endswith(('.jpg', '.jpeg')):
+            filename = path.lstrip('/')
+            self.serve_file(filename, 'image/jpeg')
+            return
 
-        # Health check endpoint for Railway
-        elif path == '/health':
+        # Health check endpoint
+        if path == '/health':
             self.send_response(200)
+            self.add_cors_headers()
             self.send_header('Content-Type', 'text/plain; charset=utf-8')
             self.end_headers()
             self.wfile.write(b'OK')
             return
 
         # Default: 404
-        else:
-            self.send_error(404, "File not found")
+        self.send_response(404)
+        self.add_cors_headers()
+        self.send_header('Content-Type', 'text/plain; charset=utf-8')
+        self.end_headers()
+        self.wfile.write(b'404 - File not found')
 
     def serve_file(self, filename, content_type):
         """Serve a file with proper headers"""
@@ -79,15 +72,53 @@ class SmartSignRequestHandler(SimpleHTTPRequestHandler):
                 content = f.read()
 
             self.send_response(200)
+            self.add_cors_headers()
+            self.add_cache_headers(filename)
             self.send_header('Content-Type', content_type)
             self.send_header('Content-Length', str(len(content)))
             self.end_headers()
             self.wfile.write(content)
+            print(f"[OK] Served {filename}")
 
         except FileNotFoundError:
-            self.send_error(404, f"File not found: {filename}")
+            self.send_response(404)
+            self.add_cors_headers()
+            self.send_header('Content-Type', 'text/plain; charset=utf-8')
+            self.end_headers()
+            self.wfile.write(f"404 - File not found: {filename}".encode())
+            print(f"[NOT FOUND] {filename}")
         except Exception as e:
-            self.send_error(500, f"Server error: {str(e)}")
+            self.send_response(500)
+            self.add_cors_headers()
+            self.send_header('Content-Type', 'text/plain; charset=utf-8')
+            self.end_headers()
+            self.wfile.write(f"500 - Server error: {str(e)}".encode())
+            print(f"[ERROR] {filename}: {str(e)}")
+
+    def add_cors_headers(self):
+        """Add CORS headers to response"""
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+
+    def add_cache_headers(self, filename):
+        """Add cache headers based on file type"""
+        if filename.endswith('.csv'):
+            # CSV: short cache (5 minutes) - data changes daily
+            self.send_header('Cache-Control', 'public, max-age=300')
+        elif filename.endswith(('.png', '.jpg', '.jpeg')):
+            # Images: longer cache (24 hours) - assets don't change often
+            self.send_header('Cache-Control', 'public, max-age=86400')
+        elif filename.endswith('.html'):
+            # HTML: short cache (5 minutes) - template may be updated
+            self.send_header('Cache-Control', 'public, max-age=300')
+        else:
+            # Default: 5 minutes
+            self.send_header('Cache-Control', 'public, max-age=300')
+
+    def log_message(self, format, *args):
+        """Suppress default logging"""
+        pass
 
 def run_server(port=8080):
     """Start the HTTP server"""
