@@ -18,16 +18,22 @@ BASE_DIR = Path(__file__).parent
 
 
 def get_current_week_start():
-    """Get Monday of current week"""
+    """Get Monday of week to display
+    - Mon-Thu: current week
+    - Fri-Sun: next week
+    """
     today = datetime.now()
     monday = today - timedelta(days=today.weekday())
+    # If Friday or later, show next week
+    if today.weekday() >= 4:
+        monday = monday + timedelta(days=7)
     return monday.date()
 
 
 def get_current_week_end():
-    """Get Sunday of current week"""
+    """Get Friday of week to display"""
     start = get_current_week_start()
-    return start + timedelta(days=6)
+    return start + timedelta(days=4)
 
 
 def parse_date(date_value):

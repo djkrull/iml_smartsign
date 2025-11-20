@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Automatisk filtrering av seminarier för SmartSign digital skyltning
-- Filtrerar endast denna veckans seminarier (måndag-fredag)
+- Filtrerar denna veckas seminarier (mån-fre), eller nästa veckas om idag är fre-söndag
 - Tar bort passerade seminarier
 - Extraherar talare från HTML-beskrivning
 - Formaterar tid för snygg visning
@@ -83,18 +83,24 @@ def main():
         df['Start date'] = pd.to_datetime(df['Start date'])
         df['End date'] = pd.to_datetime(df['End date'])
 
-        # Beräkna denna vecka (måndag-fredag)
+        # Beräkna vilken vecka som ska visas (denna eller nästa)
         today = datetime.now()
         # Hitta måndagen denna vecka
         start_of_week = today - timedelta(days=today.weekday())
         start_of_week = start_of_week.replace(hour=0, minute=0, second=0, microsecond=0)
+
+        # Om det är fredag-söndag (weekday 4-6), visa nästa veckans seminarier
+        if today.weekday() >= 4:  # Friday or later
+            start_of_week = start_of_week + timedelta(days=7)
+
         # Fredag samma vecka
         end_of_week = start_of_week + timedelta(days=4, hours=23, minutes=59, seconds=59)
 
-        print(f"\nDenna vecka: {start_of_week.date()} till {end_of_week.date()}")
+        week_type = "nästa vecka" if today.weekday() >= 4 else "denna vecka"
+        print(f"\nVecka att visa ({week_type}): {start_of_week.date()} till {end_of_week.date()}")
         print(f"Idag: {today.date()} kl {today.strftime('%H:%M')}")
 
-        # Filtrera: Endast denna vecka OCH framtida OCH taggade med "website"
+        # Filtrera: Endast denna/nästa vecka OCH framtida OCH taggade med "website"
         df_filtered = df[
             (df['Start date'] >= start_of_week) &
             (df['Start date'] <= end_of_week) &
