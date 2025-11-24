@@ -230,20 +230,24 @@
 
                 if (char === '"') {
                     if (insideQuotes && nextChar === '"') {
+                        // Escaped quote - add single quote and skip next char
                         current += '"';
                         i++;
                     } else {
+                        // Toggle quote state
                         insideQuotes = !insideQuotes;
                     }
                 } else if (char === ',' && !insideQuotes) {
-                    result.push(current.trim());
+                    // Found delimiter outside quotes
+                    result.push(current.trim().replace(/^"|"$/g, ''));
                     current = '';
                 } else {
                     current += char;
                 }
             }
 
-            result.push(current.trim());
+            // Push last field
+            result.push(current.trim().replace(/^"|"$/g, ''));
             return result;
         }
 
