@@ -11,6 +11,8 @@ import pandas as pd
 import re
 from datetime import datetime, timedelta
 from html import unescape
+from pathlib import Path
+import glob
 
 def extract_speaker(html_description):
     """
@@ -63,16 +65,41 @@ def clean_title(title):
     title = re.sub(r'^(WS|Workshop|Seminar)[,:\s]+', '', title, flags=re.IGNORECASE)
     return title
 
+def find_latest_export_file():
+    """
+    Hittar den senaste ProgramExport*.xlsx filen i Downloads-mappen
+    Returnerar sökvägen, eller None om ingen fil hittas
+    """
+    downloads_dir = Path(r"C:\Users\chrwah28.KVA\Downloads")
+
+    # Leta efter alla ProgramExport*.xlsx filer
+    pattern = downloads_dir / "ProgramExport*.xlsx"
+    matching_files = list(downloads_dir.glob("ProgramExport*.xlsx"))
+
+    if not matching_files:
+        return None
+
+    # Sortera efter senaste ändrad tid
+    latest_file = max(matching_files, key=lambda p: p.stat().st_mtime)
+    return latest_file
+
 def main():
     print("="*80)
     print("AUTOMATISK SEMINARIE-FILTRERING FOR SMARTSIGN")
     print("="*80)
 
-    # Sökvägar
-    excel_file = r"C:\Users\chrwah28.KVA\Downloads\ProgramExport (2).xlsx"
+    # Hitta senaste ProgramExport*.xlsx fil
+    excel_file = find_latest_export_file()
+
+    if excel_file is None:
+        print("\n[FEL] Ingen ProgramExport*.xlsx fil hittades i Downloads!")
+        print("       Ladda ner en ny export från ProjectPlace och försök igen.")
+        return
+
     output_csv = r"C:\Users\chrwah28.KVA\Development\smartsign\seminarier.csv"
 
-    print(f"\nLaser Excel: {excel_file}")
+    print(f"\nHittade senaste Excel-fil: {excel_file.name}")
+    print(f"Ändrad: {datetime.fromtimestamp(excel_file.stat().st_mtime).strftime('%Y-%m-%d %H:%M:%S')}")
 
     try:
         # Läs Excel

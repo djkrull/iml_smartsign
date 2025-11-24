@@ -207,11 +207,11 @@
                 if (values.length === 0) continue;
 
                 seminars.push({
-                    date: values[indices.date_formatted],
-                    time: values[indices.time],
-                    title: values[indices.title],
-                    speaker: values[indices.speaker],
-                    location: values[indices.location]
+                    date: values[indices.date_formatted] || '',
+                    time: values[indices.time] || '',
+                    title: values[indices.title] || '',
+                    speaker: values[indices.speaker] || '',
+                    location: values[indices.location] || ''
                 });
             }
 
@@ -298,6 +298,9 @@
 
         // Escape HTML special characters
         function escapeHtml(text) {
+            if (!text || typeof text !== 'string') {
+                return '';
+            }
             const map = {
                 '&': '&amp;',
                 '<': '&lt;',
