@@ -17,26 +17,37 @@ import glob
 def extract_speaker(html_description):
     """
     Extraherar talare från HTML-beskrivning
-    Letar efter <b>Speaker</b><br />Namn,Institution
+    Letar efter <b>Speaker</b> följt av namn och institution
     """
     if pd.isna(html_description) or not html_description:
         return ""
 
-    # Ta bort HTML och unescape
     clean = unescape(str(html_description))
 
-    # Leta efter Speaker-mönster
-    # Format: <b>Speaker</b><br />\nNamn,Institution<br />
-    pattern = r'<b>Speaker</b><br\s*/?>[\n\s]*([^<]+?)(?:<br|$)'
-    match = re.search(pattern, clean, re.IGNORECASE | re.DOTALL)
+    # Look for <b>Speaker</b> tag
+    if '<b>Speaker</b>' in clean:
+        start_idx = clean.find('<b>Speaker</b>') + len('<b>Speaker</b>')
 
-    if match:
-        speaker_line = match.group(1).strip()
-        # Ta första raden om det finns flera
-        speaker_line = speaker_line.split('\n')[0].strip()
-        # Ta bort extra whitespace
-        speaker_line = ' '.join(speaker_line.split())
-        return speaker_line
+        # Skip the first <br> tag (usually right after <b>Speaker</b>)
+        br_idx = clean.find('<br', start_idx)
+        if br_idx != -1:
+            br_end = clean.find('>', br_idx)
+            if br_end != -1:
+                start_idx = br_end + 1
+
+        # Find next <br> tag (end of speaker line)
+        end_idx = clean.find('<br', start_idx)
+        if end_idx == -1:
+            end_idx = start_idx + 200
+
+        speaker_text = clean[start_idx:end_idx].strip()
+        # Remove remaining HTML tags
+        speaker_text = re.sub(r'<[^>]+>', '', speaker_text).strip()
+        # Take only first line (stop at newline before Abstract/etc)
+        speaker_text = speaker_text.split('\n')[0].strip()
+        # Clean up whitespace
+        speaker_text = ' '.join(speaker_text.split())
+        return speaker_text if speaker_text else ""
 
     return ""
 

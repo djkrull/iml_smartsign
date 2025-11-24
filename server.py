@@ -80,25 +80,41 @@ def convert_timedelta_to_time_str(td_value):
 
 
 def extract_speaker_from_description(desc_html):
-    """Extract speaker from HTML description (format: <b>Speaker</b><br/>Name, Institution<br/>)"""
+    """Extract speaker from HTML description
+    Supports two formats:
+    1. <b>Speaker</b><br/>Name, Institution<br/>
+    2. <b>Speaker</b><br />\\nName, Institution<br/>
+    """
     if not desc_html or pd.isna(desc_html):
         return ''
 
     try:
         desc_str = str(desc_html)
-        # Look for <b>Speaker</b> tag and extract the following text
+        # Look for <b>Speaker</b> tag
         if '<b>Speaker</b>' in desc_str:
             start_idx = desc_str.find('<b>Speaker</b>') + len('<b>Speaker</b>')
-            end_idx = desc_str.find('<br/>', start_idx)
-            if end_idx == -1:
-                end_idx = desc_str.find('<br />', start_idx)
+
+            # Skip the first <br> tag (usually right after <b>Speaker</b>)
+            br_idx = desc_str.find('<br', start_idx)
+            if br_idx != -1:
+                # Find the end of this <br> tag
+                br_end = desc_str.find('>', br_idx)
+                if br_end != -1:
+                    start_idx = br_end + 1
+
+            # Now find the next <br> tag (end of speaker line)
+            end_idx = desc_str.find('<br', start_idx)
             if end_idx == -1:
                 end_idx = start_idx + 200  # Fallback: take next 200 chars
 
             speaker_text = desc_str[start_idx:end_idx].strip()
             # Remove any remaining HTML tags
             speaker_text = speaker_text.replace('<br/>', '').replace('<br />', '').strip()
-            return speaker_text
+            # Take only first line (stop at newline before Abstract/etc)
+            speaker_text = speaker_text.split('\n')[0].strip()
+            # Remove extra whitespace/newlines
+            speaker_text = ' '.join(speaker_text.split())
+            return speaker_text if speaker_text else ''
         else:
             return ''
     except:
