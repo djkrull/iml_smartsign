@@ -3,6 +3,6 @@
     "builder": "nixpacks"
   },
   "deploy": {
-    "startCommand": "python server.py"
+    "startCommand": "gunicorn server:app --workers 1 --timeout 120 --access-logfile -"
   }
 }
