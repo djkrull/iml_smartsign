@@ -3,8 +3,6 @@
     "builder": "nixpacks"
   },
   "deploy": {
-    "startCommand": "gunicorn server:app --bind 0.0.0.0:$PORT --workers 4",
-    "restartPolicyMaxRetries": 10,
-    "restartPolicyOnFailure": true
+    "startCommand": "gunicorn server:app"
   }
 }
