@@ -8,6 +8,7 @@ Optimized for Railway deployment
 
 import os
 import json
+import re
 from pathlib import Path
 from datetime import datetime, timedelta
 from flask import Flask, send_file, request, jsonify
@@ -108,8 +109,8 @@ def extract_speaker_from_description(desc_html):
                 end_idx = start_idx + 200  # Fallback: take next 200 chars
 
             speaker_text = desc_str[start_idx:end_idx].strip()
-            # Remove any remaining HTML tags
-            speaker_text = speaker_text.replace('<br/>', '').replace('<br />', '').strip()
+            # Remove all HTML tags (including </p>, <br>, etc)
+            speaker_text = re.sub(r'<[^>]+>', '', speaker_text).strip()
             # Take only first line (stop at newline before Abstract/etc)
             speaker_text = speaker_text.split('\n')[0].strip()
             # Remove extra whitespace/newlines

@@ -41,7 +41,7 @@ def extract_speaker(html_description):
             end_idx = start_idx + 200
 
         speaker_text = clean[start_idx:end_idx].strip()
-        # Remove remaining HTML tags
+        # Remove all HTML tags (including </p>, <br>, etc)
         speaker_text = re.sub(r'<[^>]+>', '', speaker_text).strip()
         # Take only first line (stop at newline before Abstract/etc)
         speaker_text = speaker_text.split('\n')[0].strip()
