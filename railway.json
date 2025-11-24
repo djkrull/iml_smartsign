@@ -3,6 +3,6 @@
     "builder": "nixpacks"
   },
   "deploy": {
-    "startCommand": "gunicorn server:app --workers 2"
+    "startCommand": "python server.py"
   }
 }
