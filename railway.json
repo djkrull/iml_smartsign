@@ -3,6 +3,8 @@
     "builder": "nixpacks"
   },
   "deploy": {
-    "startCommand": "gunicorn server:app"
+    "startCommand": "gunicorn server:app",
+    "healthcheckPath": "/health",
+    "restartPolicyMaxRetries": 3
   }
 }
