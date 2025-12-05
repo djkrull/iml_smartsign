@@ -3,8 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartSign Admin - Update Seminars</title>
+    <title>SmartSign Admin | Institut Mittag-Leffler</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
+        /* IML Design System Variables */
+        :root {
+            --iml-navy: #084077;
+            --iml-dark-navy: #063057;
+            --iml-gold: #E8B61C;
+            --iml-dark-gold: #B8941F;
+            --iml-cream: #f5e6d3;
+            --iml-light-gold: #f9edc6;
+            --iml-light-gray: #f8f9fa;
+            --iml-border: #dee2e6;
+            --text-dark: #212529;
+            --text-muted: #6c757d;
+            --success-green: #28a745;
+            --error-red: #dc3545;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,73 +31,86 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            font-family: Lato, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: #fff;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        .container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        /* Header */
+        header {
+            background-color: var(--iml-gold);
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
             max-width: 600px;
-            width: 100%;
-            padding: 40px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            color: #333;
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .logo {
-            width: 60px;
-            height: 60px;
-            margin: 0 auto 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
+            margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 30px;
         }
 
+        .header-logo {
+            height: 80px;
+            width: auto;
+        }
+
+        /* Container */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 1.5rem 2rem;
+        }
+
+        .page-title {
+            font-family: Georgia, serif;
+            font-size: 2rem;
+            color: var(--iml-navy);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        /* Form Card */
+        .form-card {
+            background: var(--iml-light-gold);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Drop Zone */
         .drop-zone {
-            border: 3px dashed #667eea;
-            border-radius: 10px;
+            border: 2px dashed var(--iml-gold);
+            border-radius: 8px;
             padding: 40px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            background: #f8f9fa;
-            margin-bottom: 25px;
+            background: white;
+            margin-bottom: 1.5rem;
         }
 
         .drop-zone:hover,
         .drop-zone.dragover {
-            background: #f0f2ff;
-            border-color: #764ba2;
+            background: var(--iml-cream);
+            border-color: var(--iml-dark-gold);
             transform: translateY(-2px);
         }
 
         .drop-zone.dragover {
-            background: #e8ebff;
-            border-color: #667eea;
+            border-style: solid;
         }
 
         .drop-zone-icon {
@@ -87,13 +119,13 @@
         }
 
         .drop-zone-text {
-            color: #333;
+            color: var(--text-dark);
             font-weight: 600;
             margin-bottom: 5px;
         }
 
         .drop-zone-subtext {
-            color: #999;
+            color: var(--text-muted);
             font-size: 13px;
         }
 
@@ -101,12 +133,13 @@
             display: none;
         }
 
+        /* Selected File */
         .selected-file {
-            background: #e8f5e9;
-            border: 1px solid #81c784;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
             border-radius: 8px;
             padding: 12px 15px;
-            margin-bottom: 20px;
+            margin-bottom: 1.5rem;
             display: none;
             align-items: center;
             gap: 10px;
@@ -125,7 +158,7 @@
         }
 
         .selected-file-name {
-            color: #2e7d32;
+            color: var(--success-green);
             font-weight: 600;
             font-size: 14px;
         }
@@ -135,70 +168,77 @@
             font-size: 12px;
         }
 
+        /* Buttons */
         .button-group {
             display: flex;
-            gap: 10px;
+            gap: 1rem;
         }
 
-        button {
+        .btn {
             flex: 1;
-            padding: 12px 20px;
+            padding: 0.75rem 1.5rem;
             border: none;
-            border-radius: 8px;
-            font-size: 14px;
+            border-radius: 50px;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .btn-upload {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .btn-primary {
+            background-color: var(--iml-navy);
             color: white;
         }
 
-        .btn-upload:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--iml-dark-navy);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
-        .btn-upload:disabled {
+        .btn-primary:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
 
-        .btn-clear {
-            background: #f5f5f5;
-            color: #666;
+        .btn-secondary {
+            background-color: white;
+            color: var(--text-dark);
+            border: 1px solid var(--iml-border);
         }
 
-        .btn-clear:hover:not(:disabled) {
-            background: #e0e0e0;
+        .btn-secondary:hover:not(:disabled) {
+            background-color: var(--iml-light-gray);
         }
 
-        .btn-clear:disabled {
+        .btn-secondary:disabled {
             opacity: 0.3;
             cursor: not-allowed;
         }
 
-        .btn-sync {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        .btn-success {
+            background-color: var(--success-green);
             color: white;
-            margin-top: 15px;
+            margin-top: 1rem;
         }
 
-        .btn-sync:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(17, 153, 142, 0.3);
+        .btn-success:hover:not(:disabled) {
+            background-color: #218838;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
-        .btn-sync:disabled {
+        .btn-success:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
 
+        /* Status Messages */
         .status {
-            margin-top: 25px;
-            padding: 15px;
+            margin-top: 1.5rem;
+            padding: 1rem;
             border-radius: 8px;
             display: none;
             font-size: 14px;
@@ -212,19 +252,19 @@
         .status.loading {
             background: #e3f2fd;
             color: #1565c0;
-            border: 1px solid #90caf9;
+            border-left: 4px solid #1565c0;
         }
 
         .status.success {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #81c784;
+            background: #d4edda;
+            color: var(--success-green);
+            border-left: 4px solid var(--success-green);
         }
 
         .status.error {
-            background: #ffebee;
-            color: #c62828;
-            border: 1px solid #ef5350;
+            background: #f8d7da;
+            color: var(--error-red);
+            border-left: 4px solid var(--error-red);
         }
 
         .status-icon {
@@ -237,7 +277,7 @@
             display: inline-block;
             width: 16px;
             height: 16px;
-            border: 2px solid #667eea;
+            border: 2px solid var(--iml-gold);
             border-top: 2px solid transparent;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
@@ -251,7 +291,7 @@
         .progress-bar {
             width: 100%;
             height: 4px;
-            background: #e0e0e0;
+            background: var(--iml-border);
             border-radius: 2px;
             margin-top: 10px;
             overflow: hidden;
@@ -259,24 +299,25 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            background: var(--iml-gold);
             width: 0%;
             transition: width 0.3s ease;
         }
 
+        /* Info Box */
         .info-box {
-            background: #f5f5f5;
-            border-left: 4px solid #667eea;
-            padding: 12px 15px;
-            margin-top: 20px;
+            background-color: var(--iml-light-gray);
+            border-left: 4px solid var(--iml-gold);
+            padding: 1rem 1.25rem;
+            margin-top: 1.5rem;
             border-radius: 4px;
-            font-size: 12px;
-            color: #555;
+            font-size: 13px;
+            color: var(--text-muted);
             line-height: 1.5;
         }
 
         .info-box strong {
-            color: #333;
+            color: var(--iml-navy);
         }
 
         .step-list {
@@ -291,55 +332,105 @@
 
         .step-list li:before {
             content: "✓ ";
-            color: #667eea;
+            color: var(--iml-gold);
             font-weight: bold;
             margin-right: 6px;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--iml-light-gray);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+            border-top: 1px solid var(--iml-border);
+        }
+
+        .footer p {
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-logo {
+                height: 60px;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .form-card {
+                padding: 1.5rem;
+            }
+
+            .drop-zone {
+                padding: 30px 20px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <img src="/images/IML_bla.png" alt="Institut Mittag-Leffler" class="header-logo">
+        </div>
+    </header>
+
+    <!-- Main Content -->
     <div class="container">
-        <div class="header">
-            <div class="logo">📊</div>
-            <h1>SmartSign Admin</h1>
-            <p>Update your seminar display in one click</p>
-        </div>
+        <h2 class="page-title">SmartSign Admin</h2>
+        <p class="page-subtitle">Update your seminar display in one click</p>
 
-        <div class="drop-zone" id="dropZone">
-            <div class="drop-zone-icon">📁</div>
-            <div class="drop-zone-text">Drop your Excel file here</div>
-            <div class="drop-zone-subtext">or click to browse</div>
-            <input type="file" id="fileInput" class="file-input" accept=".xlsx,.xls" />
-        </div>
+        <div class="form-card">
+            <div class="drop-zone" id="dropZone">
+                <div class="drop-zone-icon">📁</div>
+                <div class="drop-zone-text">Drop your Excel file here</div>
+                <div class="drop-zone-subtext">or click to browse</div>
+                <input type="file" id="fileInput" class="file-input" accept=".xlsx,.xls" />
+            </div>
 
-        <div class="selected-file" id="selectedFile">
-            <div class="selected-file-icon">✅</div>
-            <div class="selected-file-info">
-                <div class="selected-file-name" id="fileName"></div>
-                <div class="selected-file-size" id="fileSize"></div>
+            <div class="selected-file" id="selectedFile">
+                <div class="selected-file-icon">✅</div>
+                <div class="selected-file-info">
+                    <div class="selected-file-name" id="fileName"></div>
+                    <div class="selected-file-size" id="fileSize"></div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" id="uploadBtn" disabled>Update Seminars</button>
+                <button class="btn btn-secondary" id="clearBtn" disabled>Clear</button>
+            </div>
+
+            <button class="btn btn-success" id="syncBtn" style="width: 100%;">🔄 Sync Now</button>
+
+            <div class="status" id="status"></div>
+
+            <div class="info-box">
+                <strong>How it works:</strong>
+                <ul class="step-list">
+                    <li>Drag your Excel file here</li>
+                    <li>Click "Update Seminars"</li>
+                    <li>System converts to CSV</li>
+                    <li>Deploys to production</li>
+                    <li>Display updates automatically</li>
+                </ul>
             </div>
         </div>
-
-        <div class="button-group">
-            <button class="btn-upload" id="uploadBtn" disabled>Update Seminars</button>
-            <button class="btn-clear" id="clearBtn" disabled>Clear</button>
-        </div>
-
-        <button class="btn-sync" id="syncBtn">🔄 Sync Now</button>
-
-        <div class="status" id="status"></div>
-
-        <div class="info-box">
-            <strong>How it works:</strong>
-            <ul class="step-list">
-                <li>Drag your Excel file here</li>
-                <li>Click "Update & Deploy"</li>
-                <li>System converts to CSV</li>
-                <li>Deploys to production</li>
-                <li>Display updates automatically</li>
-            </ul>
-        </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 Institut Mittag-Leffler</p>
+        <p>The Royal Swedish Academy of Sciences</p>
+    </footer>
 
     <script>
         const dropZone = document.getElementById('dropZone');
