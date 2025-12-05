@@ -180,6 +180,22 @@
             cursor: not-allowed;
         }
 
+        .btn-sync {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            margin-top: 15px;
+        }
+
+        .btn-sync:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(17, 153, 142, 0.3);
+        }
+
+        .btn-sync:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .status {
             margin-top: 25px;
             padding: 15px;
@@ -309,6 +325,7 @@
             <button class="btn-clear" id="clearBtn" disabled>Clear</button>
         </div>
 
+        <button class="btn-sync" id="syncBtn">🔄 Sync Now</button>
 
         <div class="status" id="status"></div>
 
@@ -330,6 +347,7 @@
         const selectedFile = document.getElementById('selectedFile');
         const uploadBtn = document.getElementById('uploadBtn');
         const clearBtn = document.getElementById('clearBtn');
+        const syncBtn = document.getElementById('syncBtn');
         const status = document.getElementById('status');
         const fileName = document.getElementById('fileName');
         const fileSize = document.getElementById('fileSize');
@@ -404,6 +422,33 @@
             if (!selectedFileData) return;
             uploadFile(selectedFileData);
         });
+
+        syncBtn.addEventListener('click', () => {
+            syncNow();
+        });
+
+        async function syncNow() {
+            syncBtn.disabled = true;
+            showLoading('Running manual sync... Filtering seminars for this week...');
+
+            try {
+                const response = await fetch('/api/sync', {
+                    method: 'POST'
+                });
+
+                const data = await response.json();
+
+                if (response.ok || data.success) {
+                    showSuccess(data.message || `Synced successfully! ${data.count || 0} seminars found.`);
+                } else {
+                    showError(data.error || 'Sync failed');
+                }
+            } catch (error) {
+                showError(`Connection error: ${error.message}`);
+            } finally {
+                syncBtn.disabled = false;
+            }
+        }
 
         async function uploadFile(file) {
             const formData = new FormData();

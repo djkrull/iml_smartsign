@@ -3,7 +3,7 @@
 """
 SmartSign Server - Display & Admin Upload
 Serves display template, CSV data, and admin upload interface
-Optimized for Railway deployment
+Optimized for Railway deployment with automatic daily filtering
 """
 
 import os
@@ -13,9 +13,18 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from flask import Flask, send_file, request, jsonify
 import pandas as pd
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+import pytz
+import logging
 
 app = Flask(__name__)
 BASE_DIR = Path(__file__).parent
+EXCEL_STORAGE = BASE_DIR / 'latest_export.xlsx'
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def get_current_week_start():
@@ -290,7 +299,7 @@ def serve_static(filename):
 
 @app.route('/api/upload', methods=['POST'])
 def upload_file():
-    """Handle Excel file upload"""
+    """Handle Excel file upload and save for daily filtering"""
     if 'file' not in request.files:
         return jsonify({'error': 'No file provided'}), 400
 
@@ -304,26 +313,76 @@ def upload_file():
         return jsonify({'error': 'Invalid file type. Please upload Excel (.xlsx or .xls)'}), 400
 
     # Validate file size (10MB)
-    if len(file.read()) > 10 * 1024 * 1024:
+    file_content = file.read()
+    if len(file_content) > 10 * 1024 * 1024:
         return jsonify({'error': 'File is too large. Maximum size is 10MB'}), 400
 
     file.seek(0)  # Reset file pointer
 
     try:
-        # Process Excel file
+        # Save Excel file permanently for daily filtering
+        with open(EXCEL_STORAGE, 'wb') as f:
+            f.write(file_content)
+        logger.info(f"Saved Excel file to {EXCEL_STORAGE}")
+
+        file.seek(0)  # Reset again for processing
+
+        # Process Excel file immediately
         success, message, count = process_excel_to_csv(file)
 
         if not success:
             return jsonify({'error': message}), 400
 
         # Success!
+        logger.info(f"Processed {count} seminars from uploaded file")
         return jsonify({
             'success': True,
-            'message': f'Successfully updated with {count} seminars! Display will refresh within 2 minutes.'
+            'message': f'Successfully updated with {count} seminars! The file will be automatically filtered daily at midnight.'
         }), 200
 
     except Exception as e:
+        logger.error(f"Upload error: {str(e)}")
         return jsonify({'error': f'Server error: {str(e)}'}), 500
+
+
+@app.route('/api/sync', methods=['POST'])
+def manual_sync():
+    """Manual sync endpoint - triggers immediate filtering"""
+    logger.info("Manual sync triggered via API")
+
+    try:
+        if not EXCEL_STORAGE.exists():
+            return jsonify({
+                'success': False,
+                'error': 'No Excel file found. Please upload an Excel file first via the admin interface.',
+                'count': 0
+            }), 404
+
+        # Run the daily filter
+        success, message, count = process_excel_to_csv(EXCEL_STORAGE)
+
+        if success:
+            logger.info(f"Manual sync successful: {count} seminars")
+            return jsonify({
+                'success': True,
+                'message': message,
+                'count': count
+            }), 200
+        else:
+            logger.error(f"Manual sync failed: {message}")
+            return jsonify({
+                'success': False,
+                'error': message,
+                'count': 0
+            }), 400
+
+    except Exception as e:
+        logger.error(f"Manual sync exception: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': f'Server error: {str(e)}',
+            'count': 0
+        }), 500
 
 
 @app.route('/health')
@@ -338,12 +397,78 @@ def before_request():
     print(f"[{datetime.now().strftime('%H:%M:%S')}] {request.method} {request.path}")
 
 
+def run_daily_filter():
+    """Scheduled task: Re-filter CSV from saved Excel file daily"""
+    logger.info("=" * 80)
+    logger.info("AUTOMATIC DAILY FILTERING - STARTED")
+    logger.info("=" * 80)
+
+    try:
+        if not EXCEL_STORAGE.exists():
+            logger.warning(f"No Excel file found at {EXCEL_STORAGE}. Skipping daily filter.")
+            logger.warning("Please upload an Excel file via /admin to enable automatic filtering.")
+            return
+
+        logger.info(f"Processing Excel file: {EXCEL_STORAGE}")
+        logger.info(f"File last modified: {datetime.fromtimestamp(EXCEL_STORAGE.stat().st_mtime).strftime('%Y-%m-%d %H:%M:%S')}")
+
+        # Process the saved Excel file
+        success, message, count = process_excel_to_csv(EXCEL_STORAGE)
+
+        if success:
+            logger.info(f"[SUCCESS] Daily filter completed: {count} seminars")
+            logger.info(f"Message: {message}")
+        else:
+            logger.error(f"[ERROR] Daily filter failed: {message}")
+
+    except Exception as e:
+        logger.error(f"[ERROR] Daily filter exception: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+
+    logger.info("=" * 80)
+    logger.info("AUTOMATIC DAILY FILTERING - COMPLETED")
+    logger.info("=" * 80)
+
+
+def start_scheduler():
+    """Start background scheduler for daily filtering"""
+    scheduler = BackgroundScheduler()
+
+    # Swedish timezone
+    stockholm_tz = pytz.timezone('Europe/Stockholm')
+
+    # Schedule daily filter at 00:00 Stockholm time
+    trigger = CronTrigger(hour=0, minute=0, timezone=stockholm_tz)
+    scheduler.add_job(
+        func=run_daily_filter,
+        trigger=trigger,
+        id='daily_filter',
+        name='Daily Seminar Filter',
+        replace_existing=True
+    )
+
+    scheduler.start()
+    logger.info("=" * 80)
+    logger.info("SCHEDULER STARTED")
+    logger.info("Daily filter job scheduled for 00:00 Stockholm time")
+    logger.info("=" * 80)
+
+    # Run immediately on startup if Excel file exists (for testing)
+    if EXCEL_STORAGE.exists():
+        logger.info("Running initial filter on startup...")
+        run_daily_filter()
+
+    return scheduler
+
+
 def run_server():
-    """Start the server"""
+    """Start the server with automatic daily filtering"""
     port = int(os.environ.get('PORT', 8080))
 
     print("=" * 80)
     print("SMARTSIGN - DISPLAY & ADMIN SERVER (Flask)")
+    print("WITH AUTOMATIC DAILY FILTERING")
     print("=" * 80)
     print(f"Server running on port {port}")
     print(f"Display template: http://localhost:{port}/")
@@ -351,8 +476,19 @@ def run_server():
     print(f"CSV data:         http://localhost:{port}/seminarier.csv")
     print(f"Health check:     http://localhost:{port}/health")
     print("=" * 80)
+    print(f"Automatic filtering: Daily at 00:00 Stockholm time")
+    print(f"Excel storage:       {EXCEL_STORAGE}")
+    print("=" * 80)
 
-    app.run(host='0.0.0.0', port=port, debug=False, threaded=True)
+    # Start background scheduler for daily filtering
+    scheduler = start_scheduler()
+
+    try:
+        app.run(host='0.0.0.0', port=port, debug=False, threaded=True)
+    finally:
+        # Cleanup scheduler on shutdown
+        if scheduler:
+            scheduler.shutdown()
 
 
 if __name__ == "__main__":
