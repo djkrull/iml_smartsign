@@ -11,14 +11,14 @@ import json
 import re
 from pathlib import Path
 from datetime import datetime, timedelta
-from flask import Flask, send_file, request, jsonify
+from flask import Flask, send_file, send_from_directory, request, jsonify
 import pandas as pd
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 import pytz
 import logging
 
-app = Flask(__name__, static_folder='static', static_url_path='')
+app = Flask(__name__)
 BASE_DIR = Path(__file__).parent
 EXCEL_STORAGE = BASE_DIR / 'latest_export.xlsx'
 
@@ -388,6 +388,16 @@ def manual_sync():
 def health():
     """Health check endpoint"""
     return jsonify({'status': 'ok', 'service': 'SmartSign Server'})
+
+
+@app.route('/<path:filename>')
+def serve_static_files(filename):
+    """Serve static files (images, etc) from static folder"""
+    # Only allow certain file types for security
+    if filename.endswith(('.png', '.jpg', '.jpeg', '.gif')):
+        static_dir = BASE_DIR / 'static'
+        return send_from_directory(static_dir, filename)
+    return "Not found", 404
 
 
 @app.route('/debug/files')
