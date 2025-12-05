@@ -18,7 +18,7 @@ from apscheduler.triggers.cron import CronTrigger
 import pytz
 import logging
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='')
 BASE_DIR = Path(__file__).parent
 EXCEL_STORAGE = BASE_DIR / 'latest_export.xlsx'
 
@@ -294,21 +294,6 @@ def serve_csv():
         return send_file('seminarier.csv', mimetype='text/csv')
     except FileNotFoundError:
         return "CSV file not found", 404
-
-
-@app.route('/<filename>')
-def serve_static(filename):
-    """Serve static files (images, etc)"""
-    # Security: only serve expected file types
-    if not filename.endswith(('.png', '.jpg', '.jpeg', '.gif')):
-        return "File not found", 404
-
-    try:
-        # Use BASE_DIR to ensure correct path on Railway
-        file_path = BASE_DIR / filename
-        return send_file(file_path, mimetype='image/png' if filename.endswith('.png') else 'image/jpeg')
-    except FileNotFoundError:
-        return "File not found", 404
 
 
 @app.route('/api/upload', methods=['POST'])
