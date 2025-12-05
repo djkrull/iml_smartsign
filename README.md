@@ -629,3 +629,4 @@ https://iml.se/smartsign/seminarier.csv
 **For architectural decisions, see [docs/ADR_SmartSign_Seminarier.md](docs/ADR_SmartSign_Seminarier.md)**
 
 **For full requirements, see [docs/PRD_SmartSign_Seminarier.md](docs/PRD_SmartSign_Seminarier.md)**
+# Logo deployment fix
