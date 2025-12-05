@@ -304,7 +304,9 @@ def serve_static(filename):
         return "File not found", 404
 
     try:
-        return send_file(filename, mimetype='image/png' if filename.endswith('.png') else 'image/jpeg')
+        # Use BASE_DIR to ensure correct path on Railway
+        file_path = BASE_DIR / filename
+        return send_file(file_path, mimetype='image/png' if filename.endswith('.png') else 'image/jpeg')
     except FileNotFoundError:
         return "File not found", 404
 
