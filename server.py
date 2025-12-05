@@ -18,13 +18,24 @@ from apscheduler.triggers.cron import CronTrigger
 import pytz
 import logging
 
-app = Flask(__name__)
-BASE_DIR = Path(__file__).parent
-EXCEL_STORAGE = BASE_DIR / 'latest_export.xlsx'
-
-# Configure logging
+# Configure logging first
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+app = Flask(__name__)
+BASE_DIR = Path(__file__).parent
+
+# Use persistent volume for Excel storage (survives deployments)
+# Railway volume should be mounted at /data
+STORAGE_DIR = Path(os.environ.get('STORAGE_PATH', '/data'))
+if not STORAGE_DIR.exists():
+    # Fallback to BASE_DIR for local development
+    STORAGE_DIR = BASE_DIR
+    logger.warning(f"Persistent storage not found, using {STORAGE_DIR}")
+else:
+    logger.info(f"Using persistent storage at {STORAGE_DIR}")
+
+EXCEL_STORAGE = STORAGE_DIR / 'latest_export.xlsx'
 
 
 def get_current_week_start():
