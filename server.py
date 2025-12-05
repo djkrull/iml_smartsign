@@ -390,14 +390,32 @@ def health():
     return jsonify({'status': 'ok', 'service': 'SmartSign Server'})
 
 
-@app.route('/<path:filename>')
-def serve_static_files(filename):
-    """Serve static files (images, etc) from static folder"""
-    # Only allow certain file types for security
-    if filename.endswith(('.png', '.jpg', '.jpeg', '.gif')):
-        static_dir = BASE_DIR / 'static'
-        return send_from_directory(static_dir, filename)
-    return "Not found", 404
+@app.route('/iml_logo.png')
+def serve_logo():
+    """Serve IML logo with explicit mimetype"""
+    logo_path = BASE_DIR / 'static' / 'iml_logo.png'
+    if logo_path.exists():
+        with open(logo_path, 'rb') as f:
+            return app.response_class(
+                f.read(),
+                mimetype='image/png',
+                headers={'Cache-Control': 'public, max-age=3600'}
+            )
+    return "Logo not found", 404
+
+
+@app.route('/iml_background.png')
+def serve_background():
+    """Serve IML background with explicit mimetype"""
+    bg_path = BASE_DIR / 'static' / 'iml_background.png'
+    if bg_path.exists():
+        with open(bg_path, 'rb') as f:
+            return app.response_class(
+                f.read(),
+                mimetype='image/png',
+                headers={'Cache-Control': 'public, max-age=3600'}
+            )
+    return "Background not found", 404
 
 
 @app.route('/debug/files')
