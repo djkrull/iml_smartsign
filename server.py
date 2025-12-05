@@ -392,28 +392,36 @@ def health():
 
 @app.route('/iml_logo.png')
 def serve_logo():
-    """Serve IML logo with explicit mimetype"""
+    """Serve IML logo with explicit mimetype (query params ignored for cache busting)"""
     logo_path = BASE_DIR / 'static' / 'iml_logo.png'
     if logo_path.exists():
         with open(logo_path, 'rb') as f:
             return app.response_class(
                 f.read(),
                 mimetype='image/png',
-                headers={'Cache-Control': 'public, max-age=3600'}
+                headers={
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache',
+                    'Expires': '0'
+                }
             )
     return "Logo not found", 404
 
 
 @app.route('/iml_background.png')
 def serve_background():
-    """Serve IML background with explicit mimetype"""
+    """Serve IML background with explicit mimetype (query params ignored for cache busting)"""
     bg_path = BASE_DIR / 'static' / 'iml_background.png'
     if bg_path.exists():
         with open(bg_path, 'rb') as f:
             return app.response_class(
                 f.read(),
                 mimetype='image/png',
-                headers={'Cache-Control': 'public, max-age=3600'}
+                headers={
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache',
+                    'Expires': '0'
+                }
             )
     return "Background not found", 404
 
