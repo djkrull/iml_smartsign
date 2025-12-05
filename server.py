@@ -390,6 +390,23 @@ def health():
     return jsonify({'status': 'ok', 'service': 'SmartSign Server'})
 
 
+@app.route('/debug/files')
+def debug_files():
+    """Debug: List files in BASE_DIR and static folder"""
+    import os
+    base_files = list(BASE_DIR.glob('*'))
+    static_dir = BASE_DIR / 'static'
+    static_files = list(static_dir.glob('*')) if static_dir.exists() else []
+
+    return jsonify({
+        'base_dir': str(BASE_DIR),
+        'base_files': [f.name for f in base_files],
+        'static_dir': str(static_dir),
+        'static_exists': static_dir.exists(),
+        'static_files': [f.name for f in static_files] if static_files else []
+    })
+
+
 @app.before_request
 def before_request():
     """Log incoming requests"""
