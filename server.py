@@ -232,6 +232,18 @@ def process_excel_to_csv(excel_file):
                         speaker = potential_speaker
                         title = potential_title
 
+            # Clean title: Remove speaker name from title if title starts with "Name: Rest of title"
+            # This fixes duplication where both Speaker and Title contain the name
+            if speaker and ':' in str(title):
+                # Extract just the name part (before comma in "Name, Institution")
+                speaker_name = speaker.split(',')[0].strip()
+                title_str = str(title).strip()
+
+                # Check if title starts with speaker name followed by colon
+                if title_str.startswith(speaker_name + ':'):
+                    # Remove "Name: " prefix from title
+                    title = title_str[len(speaker_name) + 1:].strip()
+
             # Get location
             if is_projectplace_format:
                 location = row.get('Room location', '')
