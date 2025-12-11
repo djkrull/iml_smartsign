@@ -193,6 +193,10 @@ def process_excel_to_csv(excel_file):
             if not (week_start <= seminar_date <= week_end):
                 continue
 
+            # Skip events from past dates (not today or future)
+            if seminar_date < datetime.now().date():
+                continue
+
             # Parse time based on format
             if is_projectplace_format:
                 time_value = convert_timedelta_to_time_str(row.get('Start time', None))
