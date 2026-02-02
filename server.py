@@ -168,7 +168,7 @@ def process_excel_to_csv(excel_file):
 
         # Filter seminars
         week_start = get_current_week_start()
-        week_end = get_current_week_end()
+        week_end = get_current_week_end() + timedelta(days=14)  # Show seminars up to 3 weeks ahead
         filtered_rows = []
         current_time = datetime.now()
 
