@@ -102,20 +102,32 @@ def convert_timedelta_to_time_str(td_value):
 
 def extract_speaker_from_description(desc_html):
     """Extract speaker from HTML description
-    Supports two formats:
+    Supports multiple formats:
     1. <b>Speaker</b><br/>Name, Institution<br/>
-    2. <b>Speaker</b><br />\\nName, Institution<br/>
+    2. <strong>Speaker</strong><br>Name, Institution</p>
+    3. <b>Speaker</b><br />\\nName, Institution<br/>
     """
     if not desc_html or pd.isna(desc_html):
         return ''
 
     try:
         desc_str = str(desc_html)
-        # Look for <b>Speaker</b> tag
-        if '<b>Speaker</b>' in desc_str:
-            start_idx = desc_str.find('<b>Speaker</b>') + len('<b>Speaker</b>')
 
-            # Skip the first <br> tag (usually right after <b>Speaker</b>)
+        # Try to find speaker marker (either <b>Speaker</b> or <strong>Speaker</strong>)
+        speaker_marker = None
+        marker_len = 0
+
+        if '<b>Speaker</b>' in desc_str:
+            speaker_marker = '<b>Speaker</b>'
+            marker_len = len('<b>Speaker</b>')
+        elif '<strong>Speaker</strong>' in desc_str:
+            speaker_marker = '<strong>Speaker</strong>'
+            marker_len = len('<strong>Speaker</strong>')
+
+        if speaker_marker:
+            start_idx = desc_str.find(speaker_marker) + marker_len
+
+            # Skip the first <br> tag (usually right after Speaker)
             br_idx = desc_str.find('<br', start_idx)
             if br_idx != -1:
                 # Find the end of this <br> tag
@@ -123,8 +135,11 @@ def extract_speaker_from_description(desc_html):
                 if br_end != -1:
                     start_idx = br_end + 1
 
-            # Now find the next <br> tag (end of speaker line)
+            # Now find the next <br> or closing tag (end of speaker line)
             end_idx = desc_str.find('<br', start_idx)
+            if end_idx == -1:
+                # Also check for closing tags like </p>, </div>
+                end_idx = desc_str.find('<', start_idx)
             if end_idx == -1:
                 end_idx = start_idx + 200  # Fallback: take next 200 chars
 
