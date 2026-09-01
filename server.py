@@ -135,9 +135,13 @@ def extract_speaker_from_description(desc_html):
                 if br_end != -1:
                     start_idx = br_end + 1
 
-            # Now find the next <br> or closing tag (end of speaker line)
-            end_idx = desc_str.find('<br', start_idx)
-            if end_idx == -1:
+            # Now find the end of the speaker line: next <br>, or the next
+            # <b>/<strong> tag (e.g. an "Abstract" heading glued right after
+            # the institution with no <br> in between), whichever comes first.
+            next_tag_match = re.search(r'<br|<b>|<strong>', desc_str[start_idx:])
+            if next_tag_match:
+                end_idx = start_idx + next_tag_match.start()
+            else:
                 # Also check for closing tags like </p>, </div>
                 end_idx = desc_str.find('<', start_idx)
             if end_idx == -1:
@@ -148,6 +152,9 @@ def extract_speaker_from_description(desc_html):
             speaker_text = re.sub(r'<[^>]+>', '', speaker_text).strip()
             # Take only first line (stop at newline before Abstract/etc)
             speaker_text = speaker_text.split('\n')[0].strip()
+            # Safety net: strip a section heading (e.g. "Abstract") glued
+            # directly onto the text with no tag or space separating them
+            speaker_text = re.sub(r'(?<=\S)(Abstract|Bio|Biography)\b.*$', '', speaker_text).strip()
             # Remove extra whitespace/newlines
             speaker_text = ' '.join(speaker_text.split())
             return speaker_text if speaker_text else ''

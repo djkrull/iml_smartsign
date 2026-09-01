@@ -24,19 +24,31 @@ def extract_speaker(html_description):
 
     clean = unescape(str(html_description))
 
-    # Look for <b>Speaker</b> tag
+    # Look for <b>Speaker</b> or <strong>Speaker</strong> tag
+    speaker_marker = None
     if '<b>Speaker</b>' in clean:
-        start_idx = clean.find('<b>Speaker</b>') + len('<b>Speaker</b>')
+        speaker_marker = '<b>Speaker</b>'
+    elif '<strong>Speaker</strong>' in clean:
+        speaker_marker = '<strong>Speaker</strong>'
 
-        # Skip the first <br> tag (usually right after <b>Speaker</b>)
+    if speaker_marker:
+        start_idx = clean.find(speaker_marker) + len(speaker_marker)
+
+        # Skip the first <br> tag (usually right after Speaker)
         br_idx = clean.find('<br', start_idx)
         if br_idx != -1:
             br_end = clean.find('>', br_idx)
             if br_end != -1:
                 start_idx = br_end + 1
 
-        # Find next <br> tag (end of speaker line)
-        end_idx = clean.find('<br', start_idx)
+        # End of speaker line: next <br>, or the next <b>/<strong> tag
+        # (e.g. an "Abstract" heading glued right after the institution
+        # with no <br> in between), whichever comes first.
+        next_tag_match = re.search(r'<br|<b>|<strong>', clean[start_idx:])
+        if next_tag_match:
+            end_idx = start_idx + next_tag_match.start()
+        else:
+            end_idx = clean.find('<', start_idx)
         if end_idx == -1:
             end_idx = start_idx + 200
 
@@ -45,6 +57,9 @@ def extract_speaker(html_description):
         speaker_text = re.sub(r'<[^>]+>', '', speaker_text).strip()
         # Take only first line (stop at newline before Abstract/etc)
         speaker_text = speaker_text.split('\n')[0].strip()
+        # Safety net: strip a section heading (e.g. "Abstract") glued
+        # directly onto the text with no tag or space separating them
+        speaker_text = re.sub(r'(?<=\S)(Abstract|Bio|Biography)\b.*$', '', speaker_text).strip()
         # Clean up whitespace
         speaker_text = ' '.join(speaker_text.split())
         return speaker_text if speaker_text else ""
